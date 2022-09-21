@@ -5,7 +5,7 @@ namespace app\controllers;
 use Yii;
 use yii\base\Controller;
 use app\models\System;
-use app\models\Clientes;
+use app\models\Funcionarios;
 use app\helpers\ControllerHelper;
 use app\models\UrlCadastroFuncionarios;
 

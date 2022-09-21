@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use app\helpers\resources\ClientesResource;
+use app\helpers\resources\FuncionariosResource;
 use Yii;
 
 /**
@@ -94,7 +94,7 @@ class AuthToken extends \yii\db\ActiveRecord
 
         // }
 
-        return ClientesResource::findIdentity($auth->aut_user_id);
+        return FuncionariosResource::findIdentity($auth->aut_user_id);
     }
 
     /**

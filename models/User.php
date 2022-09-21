@@ -1,7 +1,7 @@
 <?php
 
 namespace app\models;
-use app\models\Clientes;
+use app\models\Funcionarios;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
@@ -10,7 +10,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public static function tableName()
     {
-        return 'clientes';
+        return 'funcionarios';
     }
 
     // public $id;
@@ -39,7 +39,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        return static::findOne(['cli_access_token' => $token]);
+        return static::findOne(['fun_access_token' => $token]);
     }
 
     /**
@@ -58,7 +58,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByEmail($email)
     {
-        return Clientes::findOne(['cli_email' => $email]);
+        return Funcionarios::findOne(['fun_email' => $email]);
     }
 
     /**

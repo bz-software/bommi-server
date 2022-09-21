@@ -14,9 +14,9 @@ use Yii;
  * @property int|null $svs_retorno
  * @property int $svs_ativo
  * @property int $svs_system
- * @property string|null $sys_descricao
- * @property int $sys_excluido
- * @property string $sys_data_inclusao
+ * @property string|null $svs_descricao
+ * @property int $svs_excluido
+ * @property string $svs_data_inclusao
  *
  * @property System $svsSystem
  */
@@ -38,9 +38,9 @@ class Servicos extends \yii\db\ActiveRecord
         return [
             [['svs_nome', 'svs_preco', 'svs_duracao', 'svs_ativo', 'svs_system'], 'required', 'message'=> 'Campo obrigatório'],
             [['svs_preco'], 'number'],
-            [['svs_retorno', 'svs_ativo', 'svs_system', 'sys_excluido'], 'integer'],
-            [['sys_descricao'], 'string'],
-            [['sys_data_inclusao'], 'safe'],
+            [['svs_retorno', 'svs_ativo', 'svs_system', 'svs_excluido'], 'integer'],
+            [['svs_descricao'], 'string'],
+            [['svs_data_inclusao'], 'safe'],
             [['svs_nome', 'svs_duracao'], 'string', 'max' => 150],
             [['svs_system'], 'exist', 'skipOnError' => true, 'targetClass' => System::className(), 'targetAttribute' => ['svs_system' => 'sys_id']],
         ];
@@ -59,9 +59,9 @@ class Servicos extends \yii\db\ActiveRecord
             'svs_retorno' => 'Svs Retorno',
             'svs_ativo' => 'Svs Ativo',
             'svs_system' => 'Svs System',
-            'sys_descricao' => 'Sys Descricao',
-            'sys_excluido' => 'Sys Excluido',
-            'sys_data_inclusao' => 'Sys Data Inclusao',
+            'svs_descricao' => 'Sys Descricao',
+            'svs_excluido' => 'Sys Excluido',
+            'svs_data_inclusao' => 'Sys Data Inclusao',
         ];
     }
 
@@ -82,6 +82,72 @@ class Servicos extends \yii\db\ActiveRecord
 
             return $registros;
         }
+    }
+
+    public static function servicosPadroes($idSistema){
+        return [
+            [
+                'svs_nome' => 'Progressiva',
+                'svs_preco' => 150.0,
+                'svs_duracao' => '01:30',
+                'svs_retorno' => 10,
+                'svs_ativo' => 1,
+                'svs_system' => $idSistema,
+                'svs_descricao' => '',
+                'svs_excluido' => 0,
+                'svs_data_inclusao' => date('Y-m-d')
+            ],
+
+            [
+                'svs_nome' => 'Degradê',
+                'svs_preco' => 45.0,
+                'svs_duracao' => '00:30',
+                'svs_retorno' => 30,
+                'svs_ativo' => 1,
+                'svs_system' => $idSistema,
+                'svs_descricao' => '',
+                'svs_excluido' => 0,
+                'svs_data_inclusao' => date('Y-m-d')
+            ],
+
+            [
+                'svs_nome' => 'Sobrancelha',
+                'svs_preco' => 30.0,
+                'svs_duracao' => '00:15',
+                'svs_retorno' => 20,
+                'svs_ativo' => 1,
+                'svs_system' => $idSistema,
+                'svs_descricao' => '',
+                'svs_excluido' => 0,
+                'svs_data_inclusao' => date('Y-m-d')
+            ],
+
+            [
+                'svs_nome' => 'Barba',
+                'svs_preco' => 50.0,
+                'svs_duracao' => '00:30',
+                'svs_retorno' => 30,
+                'svs_ativo' => 1,
+                'svs_system' => $idSistema,
+                'svs_descricao' => '',
+                'svs_excluido' => 0,
+                'svs_data_inclusao' => date('Y-m-d')
+            ],
+
+            [
+                'svs_nome' => 'Luzes',
+                'svs_preco' => 100.0,
+                'svs_duracao' => '00:50',
+                'svs_retorno' => 10,
+                'svs_ativo' => 1,
+                'svs_system' => $idSistema,
+                'svs_descricao' => '',
+                'svs_excluido' => 0,
+                'svs_data_inclusao' => date('Y-m-d')
+            ],
+        ];
+
+        
     }
 
     /**

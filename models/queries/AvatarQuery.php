@@ -3,11 +3,11 @@
 namespace app\models\queries;
 
 /**
- * This is the ActiveQuery class for [[Clientes]].
+ * This is the ActiveQuery class for [[Avatar]].
  *
- * @see Clientes
+ * @see Avatar
  */
-class ClientesQuery extends \yii\db\ActiveQuery
+class AvatarQuery extends \yii\db\ActiveQuery
 {
     /*public function active()
     {
@@ -16,7 +16,7 @@ class ClientesQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return Clientes[]|array
+     * @return Avatar[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class ClientesQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return Clientes|array|null
+     * @return Avatar|array|null
      */
     public function one($db = null)
     {

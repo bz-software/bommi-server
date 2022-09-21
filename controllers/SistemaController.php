@@ -5,11 +5,16 @@ namespace app\controllers;
 use Yii;
 use yii\base\Controller;
 use app\models\System;
-use app\models\Clientes;
+use app\models\Funcionarios;
 use app\helpers\ControllerHelper;
 use app\models\AuthToken;
 use app\models\Servicos;
 use app\helpers\Formatter;
+use app\models\Avatar;
+use app\models\AvatarUpload;
+use app\models\Cover;
+use app\models\CoverUpload;
+use yii\web\UploadedFile;
 use app\models\UrlCadastroFuncionarios;
 
 class SistemaController extends Controller{
@@ -32,7 +37,7 @@ class SistemaController extends Controller{
     }
 
     public function actionCadastrar(){
-        $Clientes = new Clientes();
+        $Funcionarios = new Funcionarios();
         $Sistema = new System();
         $requisicao = Yii::$app->request->post('dados');
         $access_token = Yii::$app->request->post('access_token');
@@ -46,16 +51,16 @@ class SistemaController extends Controller{
             throw new \yii\web\HttpException(401);
         }
 
-        $Clientes->attributes = $requisicao['clientes'];
-        $Clientes->validate();
+        $Funcionarios->attributes = $requisicao['funcionarios'];
+        $Funcionarios->validate();
         
         $Sistema->attributes = $requisicao['system'];
         $Sistema->sys_data_inicio = date('Y-m-d');
         $Sistema->sys_excluido = 0;
         $Sistema->validate();
         
-        if(!$Clientes->errors && !$Sistema->errors){
-            $clientePorEmail = Clientes::find()->where(['cli_email' => $Clientes->cli_email])->one();
+        if(!$Funcionarios->errors && !$Sistema->errors){
+            $funcionarioPorEmail = Funcionarios::find()->where(['fun_email' => $Funcionarios->fun_email])->one();
             $sistemaPorDominio = System::find()->where(['sys_dominio' => $Sistema->sys_dominio])->one();
             $sistemaPorCnpj = System::find()->where(['sys_cnpj' => $Sistema->sys_cnpj])->one();
 
@@ -63,49 +68,67 @@ class SistemaController extends Controller{
                 $Sistema->addError('sys_cnpj', "Já existe uma empresa cadastrada com o CNPJ informado");
             }
 
-            if(!empty($clientePorEmail)){                
-                $Clientes->addError('cli_email', "Já existe um usuário cadastrado com o e-mail informado");
+            if(!empty($funcionarioPorEmail)){                
+                $Funcionarios->addError('fun_email', "Já existe um usuário cadastrado com o e-mail informado");
             }
 
             if(!empty($sistemaPorDominio)){
                 $Sistema->addError('sys_dominio', "Já existe uma empresa cadastrada com o domínio informado");
             }
             
-            if(!$Clientes->errors && !$Sistema->errors){  
-                $Clientes->cli_senha = password_hash($Clientes->cli_senha, PASSWORD_DEFAULT);
-                $Clientes->cli_primeiro_nome = Clientes::getPrimeiroNome($Clientes->cli_nome);
-                $Clientes->cli_avatar = "imgs/avatar/default.jpg";
-                $Sistema->sys_capa = "imgs/cover/default.jpg";
-                $Sistema->sys_logo = "imgs/avatar/default-system.jpg";
-                $Clientes->save();
+            if(!$Funcionarios->errors && !$Sistema->errors){  
+                $Funcionarios->fun_senha = password_hash($Funcionarios->fun_senha, PASSWORD_DEFAULT);
+                $Funcionarios->fun_primeiro_nome = Funcionarios::getPrimeiroNome($Funcionarios->fun_nome);
+                $Funcionarios->fun_avatar = "imgs/user/avatar/default.jpg";
+                $Sistema->sys_capa = "imgs/system/cover/default.jpg";
+                $Sistema->sys_logo = "imgs/system/avatar/default.jpg";
+                $Funcionarios->save();
             
-                $Sistema->sys_cliente = $Clientes->cli_id;
+                $Sistema->sys_cliente = $Funcionarios->fun_id;
                 $Sistema->save();
+
+                $this->setServicosPadroes($Sistema->sys_id);
 
                 return $this->sendJson( [
                     'message' => ['200'],
-                    'cli_id' => $Clientes->cli_id
+                    'fun_id' => $Funcionarios->fun_id
                 ]);
             }
         }
 
         return $this->sendJson( [
             'errors' => [
-                'clientes' => $Clientes->getFirstErrors(), 
+                'funcionarios' => $Funcionarios->getFirstErrors(), 
                 'system' => $Sistema->getFirstErrors()
             ]
         ]);
 
     }
 
+    private function setServicosPadroes($idSistema){
+        $servicos = Servicos::servicosPadroes($idSistema);
+
+        foreach($servicos as $servico){
+            $Servicos = new Servicos();
+
+            $Servicos->attributes = $servico;
+            $Servicos->save();
+        }
+    }
+
     public function actionBuscar(){
         $dominio = strtolower(Yii::$app->request->post('domain')); 
-        $sistema = System::find()
-                ->where(['sys_dominio' => $dominio])
-                ->andWhere(['sys_excluido' => 0])
-                ->one();
-        if(!empty($sistema)){
-            return $this->sendJson(['sysData' => $sistema]);
+        $system = System::findByDominio($dominio);
+
+        if(!empty($system)){
+            $servicos = SistemaController::buscarServicosPorSistema($system['sys_id']);
+
+            return $this->sendJson([
+                'system' => [
+                    'data' => $system,
+                    'servicos' => Servicos::formatarParaRetorno($servicos),
+                ],
+            ]);
         }else{
             return  $this->sendJson(['error' => 'not-found']);
         }
@@ -115,7 +138,7 @@ class SistemaController extends Controller{
         $token = Yii::$app->request->post('token');
         if(!empty($token) && AuthToken::validateToken($token)){
             $identity = AuthToken::findUserByAccessToken($token);
-            $sistemas = System::find()->select(['sys_id', 'sys_nome_empresa'])->where(['sys_cliente'=>$identity['cli_id']])->all();
+            $sistemas = System::find()->select(['sys_id', 'sys_nome_empresa'])->where(['sys_cliente'=>$identity['fun_id']])->all();
             return $this->sendJson([
                 'sistemas'=>$sistemas
             ]);
@@ -185,12 +208,12 @@ class SistemaController extends Controller{
                 $Sistema->sys_capa = "imgs/cover/default.jpg";
                 $Sistema->sys_logo = "imgs/avatar/default.jpg";
             
-                $Sistema->sys_cliente = $identity->cli_id;
+                $Sistema->sys_cliente = $identity->fun_id;
                 $Sistema->save();
 
                 return $this->sendJson( [
                     'message' => ['200'],
-                    'cli_id' => $identity->cli_id,
+                    'fun_id' => $identity->fun_id,
                 ]);
             }
         }
@@ -311,11 +334,105 @@ class SistemaController extends Controller{
         throw new \yii\web\HttpException(200);
     }
 
-    private function buscarServicosPorSistema($id){
+    public static function buscarServicosPorSistema($id){
         return Servicos::find()
                        ->where(['svs_system' => $id])
-                       ->andWhere(['=', 'sys_excluido', 0])
+                       ->andWhere(['=', 'svs_excluido', 0])
                        ->orderBy(['svs_id' => SORT_DESC])
                        ->all();
+    }
+
+    public function actionUploadAvatar(){
+        $token = Yii::$app->request->post('token');
+        $image = $_FILES['file'];
+        $idSistema = Yii::$app->request->post('idSistema');
+
+        $AvatarUpload = new AvatarUpload();
+        $avatar = new Avatar();
+
+        if(!empty($token) && !AuthToken::validateToken($token)){
+            throw new \yii\web\HttpException(401);
+        }
+
+        $AvatarUpload->imageFile = UploadedFile::getInstanceByName('file');
+        $path = $AvatarUpload->upload($idSistema);
+        if($path){
+            Avatar::setTodosNaoAtual($idSistema);
+
+            $avatar->avt_caminho = $path;
+            $avatar->avt_atual = 1;
+            $avatar->avt_data = (string) strtotime(date('d-m-Y H:i:s'));
+            $avatar->avt_sys_id = $idSistema;
+
+            if($avatar->save()){
+                return $this->sendJson([
+                    'file' => ControllerHelper::pathToSystemAvatar() . $avatar->avt_caminho
+                ]);
+            }else{
+                return $this->sendJson([
+                    'error' => $avatar->getErrors(),
+                ]);
+            }
+        }else{
+            $errors = $AvatarUpload->getFirstErrors();
+            return $this->sendJson([
+                'error' => reset($errors),
+            ]);
+        }
+    }
+
+    public function actionUploadCapa(){
+        $token = Yii::$app->request->post('token');
+        $idSistema = Yii::$app->request->post('idSistema');
+
+        $CoverUpload = new CoverUpload();
+        $capa = new Cover();
+
+        if(!empty($token) && !AuthToken::validateToken($token)){
+            throw new \yii\web\HttpException(401);
+        }
+
+        $CoverUpload->imageFile = UploadedFile::getInstanceByName('file');
+        $path = $CoverUpload->upload($idSistema);
+        if($path){
+            Cover::setTodosNaoAtual($idSistema);
+
+            $capa->cov_caminho = $path;
+            $capa->cov_atual = 1;
+            $capa->cov_data = (string) strtotime(date('d-m-Y H:i:s'));
+            $capa->cov_sys_id = $idSistema;
+
+            if($capa->save()){
+                return $this->sendJson([
+                    'file' => ControllerHelper::pathToSystemCover() . $capa->cov_caminho
+                ]);
+            }else{
+                return $this->sendJson([
+                    'error' => $capa->getErrors(),
+                ]);
+            }
+        }else{
+            $errors = $CoverUpload->getFirstErrors();
+            return $this->sendJson([
+                'error' => reset($errors),
+            ]);
+        }
+    }
+
+    public function actionChange(){
+        $idSistema = Yii::$app->request->post('idSistema');
+        $idUser = Yii::$app->request->post('idUser');
+
+        System::setPrincipal($idSistema, $idUser);
+
+        $system = System::findByFuncionarioId($idUser);
+        $systems = System::findAllNaoAtivos($system['sys_id'], $idUser);
+
+        return $this->sendJson([
+            'system' => [
+                'data' => $system,
+            ],
+            'systems' => $systems,
+        ]);
     }
 }

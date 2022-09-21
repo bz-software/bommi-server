@@ -36,9 +36,15 @@ tests/_support/_generated
 .env
 
 # foto do avatar
-/web/imgs/avatar/*
-!/web/imgs/avatar/default-system.jpg
-!/web/imgs/avatar/default.jpg
+/web/imgs/system/avatar/*
+/web/imgs/user/avatar/*
 
 # foto de capa
-/web/imgs/cover/*
+/web/imgs/system/cover/*
+
+# Imagens padrões
+!/web/imgs/user/avatar/default.jpg
+!/web/imgs/system/avatar/default.jpg
+!/web/imgs/system/cover/default.jpg
+
+

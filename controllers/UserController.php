@@ -4,11 +4,14 @@ namespace app\controllers;
 
 use Yii;
 use yii\base\Controller;
-use app\models\Clientes;
+use app\models\Funcionarios;
 use app\helpers\ControllerHelper;
-use app\helpers\resources\ClientesResource;
+use app\helpers\resources\FuncionariosResource;
 use app\models\AuthToken;
 use app\models\System;
+use app\controllers\SistemaController;
+use app\models\Servicos;
+use app\models\Avatar;
 
 class UserController extends Controller{
 
@@ -34,20 +37,20 @@ class UserController extends Controller{
 
         if(!empty($request['access_token']) && AuthToken::validateToken($request['access_token'])){
             $identity = AuthToken::findUserByAccessToken($request['access_token']);
-            $auth = AuthToken::setAccessToken($identity->cli_id);
+            $auth = AuthToken::setAccessToken($identity->fun_id);
 
             return $this->sendJson([
                 'access_token' => $auth->aut_token,
                 'type' => 'renovate'
             ]);
         }else{
-            $identity = Clientes::findOne(['cli_email' => $request['cli_email']]);
+            $identity = Funcionarios::findOne(['fun_email' => $request['fun_email']]);
             if(!empty($identity)){
 
-                if($identity->validatePassword($request['cli_senha'])){
+                if($identity->validatePassword($request['fun_senha'])){
 
                     Yii::$app->user->login($identity);
-                    $auth = AuthToken::setAccessToken($identity->cli_id);
+                    $auth = AuthToken::setAccessToken($identity->fun_id);
 
                     return $this->sendJson([
                         'access_token' => $auth->aut_token,
@@ -72,17 +75,17 @@ class UserController extends Controller{
             return $this->sendJson(['error' => $error]);
         }
 
-        $identity = Clientes::findOne(['cli_email' => $request['cli_email']]);
+        $identity = Funcionarios::findOne(['fun_email' => $request['fun_email']]);
         if(!empty($identity)){
 
-            if($identity->validatePassword($request['cli_senha'])){
+            if($identity->validatePassword($request['fun_senha'])){
 
                 Yii::$app->user->login($identity);
-                $auth = AuthToken::setAccessToken($identity->cli_id);
+                $auth = AuthToken::setAccessToken($identity->fun_id);
 
                 return $this->sendJson([
                     'access_token' => $auth->aut_token,
-                    'user_data' => ClientesResource::findOne($identity->cli_id)
+                    'user_data' => FuncionariosResource::findOne($identity->fun_id)
                 ]);
             }else{
                 $this->sendMessage(null, "Senha inválida");
@@ -108,11 +111,18 @@ class UserController extends Controller{
 
         if(!empty($access_token) && AuthToken::validateToken($access_token)){
             $identity = AuthToken::findUserByAccessToken($access_token, true);
-            $system = System::findByClienteId($identity->cli_id);
+            $system = System::findByFuncionarioId($identity->fun_id);
+            $systems = System::findAllNaoAtivos($system['sys_id'], $identity['fun_id']);
+
+            $servicos = SistemaController::buscarServicosPorSistema($system['sys_id']);
 
             return $this->sendJson([
                 'user_data' => $identity,
-                'system' => $system,
+                'system' => [
+                    'data' => $system,
+                    'servicos' => Servicos::formatarParaRetorno($servicos),
+                ],
+                'systems' => $systems,
                 'access_token' => $access_token
             ]);
         }else{
@@ -148,7 +158,7 @@ class UserController extends Controller{
         $access_token = Yii::$app->request->post('access_token');
 
         $identity = AuthToken::findUserByAccessToken($access_token);
-        AuthToken::setAccessToken($identity->cli_id);
+        AuthToken::setAccessToken($identity->fun_id);
 
         throw new \yii\web\HttpException(200);
     }
@@ -157,12 +167,12 @@ class UserController extends Controller{
         $message = "Campo obrigatório";
         $messages = array();
 
-        if(!isset($data['cli_email']) || empty($data['cli_email'])){
-            $messages['cli_email'] = $message;
+        if(!isset($data['fun_email']) || empty($data['fun_email'])){
+            $messages['fun_email'] = $message;
         }
 
-        if(!isset($data['cli_senha']) || empty($data['cli_senha'])){
-            $messages['cli_senha'] = $message;
+        if(!isset($data['fun_senha']) || empty($data['fun_senha'])){
+            $messages['fun_senha'] = $message;
         }
         
         if(!empty($messages)){
@@ -176,11 +186,11 @@ class UserController extends Controller{
         $messages = array();
 
         if($email){
-            $messages['cli_email'] = $email;
+            $messages['fun_email'] = $email;
         }
 
         if($senha){
-            $messages['cli_senha'] = $senha;
+            $messages['fun_senha'] = $senha;
         }
 
         return $this->sendJson(['error' => $messages]);
