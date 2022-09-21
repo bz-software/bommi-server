@@ -120,6 +120,30 @@ class UserController extends Controller{
         }
     }
 
+    public function actionIsLogged(){
+        $token = Yii::$app->request->post('access_token');
+
+        if(!empty($token) && AuthToken::validateToken($token)){
+            $identity = AuthToken::findUserByAccessToken($token, true);
+            $system = System::findByFuncionarioId($identity->fun_id);
+            $systems = System::findAllNaoAtivos($system['sys_id'], $identity['fun_id']);
+
+            $servicos = SistemaController::buscarServicosPorSistema($system['sys_id']);
+
+            return $this->sendJson([
+                'user_data' => $identity,
+                'system' => [
+                    'data' => $system,
+                    'servicos' => Servicos::formatarParaRetorno($servicos),
+                ],
+                'systems' => $systems,
+                'access_token' => $token
+            ]);
+        }else{
+            throw new \yii\web\HttpException(401);
+        }
+    }
+
     public function actionLogout(){
         $access_token = Yii::$app->request->post('access_token');
 
