@@ -239,16 +239,6 @@ class SistemaController extends Controller{
         ]);
     }
 
-    public static function urlCadastroDisponivel($id){
-        $urlDisponiveis = UrlCadastroFuncionarios::find()
-                          ->where(['ucf_system' => $id])
-                          ->andWhere(['IS', 'ucf_usuario_cadastrado', null ])
-                          ->andWhere(['>', 'ucf_expire', strtotime(date('Y-m-d H:i:s'))])
-                          ->count();
-
-        return $urlDisponiveis;
-    }
-
     public function actionCriarServico(){
         $Servicos = new Servicos();
 

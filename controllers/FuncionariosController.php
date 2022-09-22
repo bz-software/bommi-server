@@ -8,6 +8,7 @@ use app\models\System;
 use app\models\Funcionarios;
 use app\helpers\ControllerHelper;
 use app\models\UrlCadastroFuncionarios;
+use app\models\AuthToken;
 
 class FuncionariosController extends Controller{
 
@@ -34,9 +35,9 @@ class FuncionariosController extends Controller{
             ]);
         }
 
-        if(intval(SistemaController::urlCadastroDisponivel($requisicao['sistema'])) > 0){
-            throw new \yii\web\HttpException(401);
-        }
+        // if(intval(SistemaController::urlCadastroDisponivel($requisicao['sistema'])) > 0){
+        //     throw new \yii\web\HttpException(401);
+        // }
 
         $expires = (string) strtotime(date('Y-m-d H:i:s', strtotime("+7 days")));
         $token = \Yii::$app->security->generateRandomString();
@@ -53,8 +54,20 @@ class FuncionariosController extends Controller{
                 ]);
             }
         }
-        
-        
+    }
+
+    public function actionIndex(){
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        if(!empty($access_token) && !AuthToken::validateToken($access_token)){
+            throw new \yii\web\HttpException(401);
+        }
+
+        $idSistema = Yii::$app->request->post('idSistema');
+
+        if(!empty($idSistema)){
+            return ['codigosCadastro' => UrlCadastroFuncionarios::disponiveis($idSistema)];
+        }
     }
     
     

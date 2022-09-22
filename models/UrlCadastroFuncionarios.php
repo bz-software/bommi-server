@@ -53,6 +53,16 @@ class UrlCadastroFuncionarios extends \yii\db\ActiveRecord
         ];
     }
 
+    public static function disponiveis($id){
+        $urlDisponiveis = self::find()
+                          ->where(['ucf_system' => $id])
+                          ->andWhere(['IS', 'ucf_usuario_cadastrado', null ])
+                          ->andWhere(['>', 'ucf_expire', strtotime(date('Y-m-d H:i:s'))])
+                          ->all();
+
+        return $urlDisponiveis;
+    }
+
     /**
      * Gets query for [[UcfSystem]].
      *
