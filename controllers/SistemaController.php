@@ -225,19 +225,6 @@ class SistemaController extends Controller{
         ]);
     }
 
-    public function actionUrlCadastroDisponivel(){
-        $id = Yii::$app->request->post('id');
-
-        $urlDisponiveis = UrlCadastroFuncionarios::find()
-                          ->where(['ucf_system' => $id])
-                          ->andWhere(['>', 'ucf_expire', strtotime(date('Y-m-d H:i:s'))])
-                          ->count();
-
-        return $this->sendJson([
-            'cadastrosRestantes' => $urlDisponiveis
-        ]);
-    }
-
     public function actionCriarServico(){
         $Servicos = new Servicos();
 

@@ -12,9 +12,12 @@ use Yii;
  * @property string $ucf_token
  * @property string $ucf_expire
  * @property int $ucf_usuario_cadastrado
+ * @property int $ufc_car_id
  *
  * @property UrlCadastroFuncionarios $ucfSystem
  * @property UrlCadastroFuncionarios[] $urlCadastroFuncionarios
+ * @property Cargos $ufcCar
+ * 
  */
 class UrlCadastroFuncionarios extends \yii\db\ActiveRecord
 {
@@ -32,8 +35,8 @@ class UrlCadastroFuncionarios extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['ucf_system', 'ucf_token', 'ucf_expire'], 'required'],
-            [['ucf_system', 'ucf_usuario_cadastrado'], 'integer'],
+            [['ucf_system', 'ucf_token', 'ucf_expire', 'ufc_car_id'], 'required'],
+            [['ucf_system', 'ucf_usuario_cadastrado', 'ufc_car_id'], 'integer'],
             [['ucf_token', 'ucf_expire'], 'string', 'max' => 150],
             [['ucf_system'], 'exist', 'skipOnError' => true, 'targetClass' => System::className(), 'targetAttribute' => ['ucf_system' => 'sys_id']],
         ];
@@ -45,11 +48,12 @@ class UrlCadastroFuncionarios extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'ucf_id' => 'Ucf ID',
-            'ucf_system' => 'Ucf System',
-            'ucf_token' => 'Ucf Token',
-            'ucf_expire' => 'Ucf Expire',
-            'ucf_usuario_cadastrado' => 'Ucf Usuario Cadastrado',
+            'ucf_id' => 'Id',
+            'ucf_system' => 'Sistema',
+            'ucf_token' => 'Código de cadastro',
+            'ucf_expire' => 'Validade',
+            'ucf_usuario_cadastrado' => 'Usuário',
+            'ufc_car_id' => 'Cargo',
         ];
     }
 
@@ -59,6 +63,16 @@ class UrlCadastroFuncionarios extends \yii\db\ActiveRecord
                           ->andWhere(['IS', 'ucf_usuario_cadastrado', null ])
                           ->andWhere(['>', 'ucf_expire', strtotime(date('Y-m-d H:i:s'))])
                           ->all();
+
+        return $urlDisponiveis;
+    }
+
+    public static function totalDisponivel($id){
+        $urlDisponiveis = self::find()
+                          ->where(['ucf_system' => $id])
+                          ->andWhere(['IS', 'ucf_usuario_cadastrado', null ])
+                          ->andWhere(['>', 'ucf_expire', strtotime(date('Y-m-d H:i:s'))])
+                          ->count();
 
         return $urlDisponiveis;
     }
@@ -81,6 +95,16 @@ class UrlCadastroFuncionarios extends \yii\db\ActiveRecord
     public function getUrlCadastroFuncionarios()
     {
         return $this->hasMany(UrlCadastroFuncionarios::className(), ['ucf_system' => 'ucf_id']);
+    }
+
+    /**
+    * Gets query for [[UfcCar]].
+    *
+    * @return \yii\db\ActiveQuery|queries\CargosQuery
+    */
+    public function getUfcCar()
+    {
+        return $this->hasOne(Cargos::className(), ['car_id' => 'ufc_car_id']);
     }
 
     /**

@@ -9,8 +9,10 @@ use app\models\Funcionarios;
 use app\helpers\ControllerHelper;
 use app\models\UrlCadastroFuncionarios;
 use app\models\AuthToken;
+use app\models\Cargos;
 
 class FuncionariosController extends Controller{
+    protected $limiteCadastro = 5;
 
     public function sendJson($data){
         return ControllerHelper::sendJson($data);
@@ -24,35 +26,39 @@ class FuncionariosController extends Controller{
         ];
     }
 
-    public function actionCriarUrlCadastro(){
-        define('LIMITE_CADASTROS', 10); 
-        $requisicao = Yii::$app->request->post('dados');
-        if($requisicao['countCadastros'] > 10 || $requisicao['countCadastros'] < 1 ){
-            return $this->sendJson([
-                'error' => [
-                    'countCadastros' => 'Digite um valor entre 1 e 10'
-                ]
-            ]);
-        }
+    public function actionCreate(){
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        // if(intval(SistemaController::urlCadastroDisponivel($requisicao['sistema'])) > 0){
-        //     throw new \yii\web\HttpException(401);
-        // }
+        $cadastroFuncionario = Yii::$app->request->post('cadastroFuncionario');
+
+
+        if(intval(UrlCadastroFuncionarios::totalDisponivel($cadastroFuncionario['ucf_system'])) > $this->limiteCadastro){
+            $error['messages']['ucf_token'] = "Limite de 5 códigos ativos alcançado";
+            throw new \yii\web\HttpException(400, json_encode($error));
+        }
 
         $expires = (string) strtotime(date('Y-m-d H:i:s', strtotime("+7 days")));
         $token = \Yii::$app->security->generateRandomString();
-        for($i = 1; $i <= $requisicao['countCadastros']; $i++){
-            $urlCadastroFuncionarios = new UrlCadastroFuncionarios();
-            $urlCadastroFuncionarios->ucf_token = $token;
-            $urlCadastroFuncionarios->ucf_expire = $expires;
-            $urlCadastroFuncionarios->ucf_system = intval($requisicao['sistema']);
-            // $urlCadastroFuncionarios->save();
+       
+        $urlCadastroFuncionarios = new UrlCadastroFuncionarios();
+        $urlCadastroFuncionarios->ucf_token = $token;
+        $urlCadastroFuncionarios->ucf_expire = $expires;
+        $urlCadastroFuncionarios->ucf_system = intval($cadastroFuncionario['ucf_system']);
+        $urlCadastroFuncionarios->ufc_car_id = $cadastroFuncionario['ufc_car_id'];
+        
 
-            if(!$urlCadastroFuncionarios->validate()){
-                return $this->sendJson([
-                    'error'=>$urlCadastroFuncionarios->getFirstErrors()
-                ]);
-            }
+        if(!$urlCadastroFuncionarios->validate()){
+            Yii::$app->response->statusCode = 400;
+            
+            $error['messages'] = $urlCadastroFuncionarios->getFirstErrors();
+            return $error['messages'];
+        }else{
+            $urlCadastroFuncionarios->save();
+
+            return[
+                'codigoCadastro'  => $urlCadastroFuncionarios->attributes,
+                'codigosCadastro' => UrlCadastroFuncionarios::disponiveis($cadastroFuncionario['ucf_system'])
+            ];
         }
     }
 
@@ -66,7 +72,10 @@ class FuncionariosController extends Controller{
         $idSistema = Yii::$app->request->post('idSistema');
 
         if(!empty($idSistema)){
-            return ['codigosCadastro' => UrlCadastroFuncionarios::disponiveis($idSistema)];
+            return [
+                'codigosCadastro' => UrlCadastroFuncionarios::disponiveis($idSistema),
+                'cargos' => Cargos::porSistema($idSistema)
+            ];
         }
     }
     
