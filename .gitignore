@@ -1,50 +1,19 @@
-# phpstorm project files
-.idea
-
-# netbeans project files
-nbproject
-
-# zend studio for eclipse project files
-.buildpath
-.project
-.settings
-
-# windows thumbnail cache
-Thumbs.db
-
-# composer vendor dir
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
 /vendor
-
-# composer itself is not needed
-composer.phar
-
-# Mac DS_Store Files
-.DS_Store
-
-# phpunit itself is not needed
-phpunit.phar
-# local phpunit config
-/phpunit.xml
-
-tests/_output/*
-tests/_support/_generated
-
-# vagrant folder
-/.vagrant
-
-# variavel de ambiente
 .env
-
-# foto do avatar
-/web/imgs/system/avatar/*
-/web/imgs/user/avatar/*
-
-# foto de capa
-/web/imgs/system/cover/*
-
-# Imagens padrões
-!/web/imgs/user/avatar/default.jpg
-!/web/imgs/system/avatar/default.jpg
-!/web/imgs/system/cover/default.jpg
-
-
+.env.backup
+.env.production
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+/.fleet
+/.idea
+/.vscode
