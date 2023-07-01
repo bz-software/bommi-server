@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Requests\UserRequest;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 class PlaceController extends Controller
 {
@@ -17,14 +19,20 @@ class PlaceController extends Controller
     }
 
     public function register(Request $request){
-        $user = $request->get('usuario');
+        $ruser = $request->get('usuario');
         $place = $request->get('estabelecimento');
         $placeAdress = $place['endereco'];
-    
-        
-        return[
-            'usuario' => $user,
-            'place' => $place
-        ];
+
+        $userValidator = Validator::make($ruser, User::rules(), User::messages());
+        if($userValidator->fails()){
+            return response()->json(['errors' => $userValidator->errors()], 400);
+        }
+
+        $user = new User($ruser);
+        $user->senha = Hash::make($user->senha);
+
+        if($user->save()){
+            return response()->json($user->id, 200);
+        } 
     }
 }
