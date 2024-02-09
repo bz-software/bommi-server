@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AuthEmployeeController;
 use App\Http\Controllers\EmployeeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,11 +20,13 @@ Route::get('/ping', function(){
     return ['pong' => true];
 });
 
-Route::post('/auth/employee/login', [AuthController::class, 'employeeLogin']);
-Route::post('/auth/employee/logout', [AuthController::class, 'emplyeeLogout']);
-Route::post('/auth/employee/refresh', [AuthController::class, 'emplyeeRefresh']);
+Route::get('/401', [AuthEmployeeController::class, 'unauthorized'])->name('login');
 
-Route::post('/employee', [EmployeeController::class, 'create']);
+Route::post('/auth/employee/login', [AuthEmployeeController::class, 'login']);
+Route::post('/auth/employee/logout', [AuthEmployeeController::class, 'logout']);
+Route::post('/auth/employee/refresh', [AuthEmployeeController::class, 'refresh']);
+Route::post('/auth/employee', [AuthEmployeeController::class, 'create']);
+
 Route::get('/employee', [EmployeeController::class, 'read']);
 Route::get('/employees', [EmployeeController::class, 'list']);
 Route::get('/employee/{id}', [EmployeeController::class, 'one']);
