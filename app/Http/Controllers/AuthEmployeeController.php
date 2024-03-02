@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\ControllerHelper as cHelper;
+use Carbon\Carbon;
 
 class AuthEmployeeController extends Controller
 {
@@ -43,7 +44,6 @@ class AuthEmployeeController extends Controller
         }else{
             return [
                 'usuario' => auth('employee')->user(),
-                'teste' => auth('employee')->check(),
                 'token' => $login
             ];
         }
@@ -60,6 +60,7 @@ class AuthEmployeeController extends Controller
         }
 
         $employeeSave = new Employee($request->all());
+        $employeeSave->emp_birthdate = Carbon::parse($employeeSave->emp_birthdate)->translatedFormat('Y-m-d');
         $employeeSave->emp_password = Hash::make($request->input('emp_password'));
         $employeeSave->save();
 
@@ -73,11 +74,13 @@ class AuthEmployeeController extends Controller
         if(!$login){
             return response()->json(['errors' => "error"], 400);
         }else{
-
-            return [
-                'usuario' => auth('employee')->user(),
-                'teste' => auth('employee')->check()
-            ];
+            $id = auth('employee')->user()->emp_id;
+            $employeeLogged =  Employee::where('emp_id', $id)->first();
+            
+            return response()->json([
+                'token' => $login,
+                'user' => $employeeLogged
+            ], 200);
         }
     }
 
