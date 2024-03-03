@@ -26,9 +26,11 @@ class AuthEmployeeController extends Controller
         $employeeFoundedByEmail = Employee::where('emp_email', $email)->where('emp_deleted', false)->first();
 
         if(empty($employeeFoundedByEmail)){
-            return response()->json([
-                'message' => 'User not found'
-            ],401);
+            $message['errors'] = [
+                'emp_email' => 'Usuário não encontrado'
+            ];
+
+            return response()->json($message, 401);
         }
 
         $login = auth('employee')->attempt(
@@ -40,15 +42,20 @@ class AuthEmployeeController extends Controller
 
         
         if(!$login){
-            return response()->json(['errors' => "Invalid Credentials"], 400);
+            $message['errors'] = [
+                'emp_password' => 'Senha inválida'
+            ];
+
+            return response()->json($message, 400);
         }else{
+            $id = auth('employee')->user()->emp_id;
+            $employeeLogged =  Employee::where('emp_id', $id)->first();
+
             return [
-                'usuario' => auth('employee')->user(),
+                'user' => $employeeLogged,
                 'token' => $login
             ];
         }
-
-        // return false;
     }
 
     public function create(Request $request){
