@@ -21,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->cpfValidator();
+        $this->cnpj();
+        $this->phoneNumber();
     }
 
     public function cpfValidator(){
@@ -67,11 +69,11 @@ class AppServiceProvider extends ServiceProvider
     }
 
     public function phoneNumber(){
-        Validator::extend('phone-number', function ($attribute, $value, $parameters, $validator) {
+        Validator::extend('phonenumber', function ($attribute, $value, $parameters, $validator) {
             return (bool) preg_match('/[0-9]{10,11}/', preg_replace('/\D/', '', $value));
         });
 
-        Validator::replacer('phone-number', function ($message, $attribute, $rule, $parameters) {
+        Validator::replacer('phonenumber', function ($message, $attribute, $rule, $parameters) {
             return 'Telefone Inválido';
         });
     }

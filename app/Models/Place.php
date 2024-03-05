@@ -29,7 +29,7 @@ class Place extends Model {
     public static function rules():array {
         return [
             'pla_name' => 'required|max:200',
-            'pla_phone_number' => 'required|max:11|phone-number',
+            'pla_phone_number' => 'required|max:11|phonenumber',
             'pla_category_id' => 'required|exists:categories_places,capl_id',
             'pla_cnpj' => 'cnpj',
             'pla_has_cnpj' => 'required|boolean',

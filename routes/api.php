@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthEmployeeController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\PlaceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,3 +32,6 @@ Route::get('/employee', [EmployeeController::class, 'read']);
 Route::get('/employees', [EmployeeController::class, 'list']);
 Route::get('/employee/{id}', [EmployeeController::class, 'one']);
 Route::put('/employee', [EmployeeController::class, 'update']);
+
+Route::post('/place', [PlaceController::class, 'create'])->middleware('auth:employee');
+Route::get('/place/categories', [PlaceController::class, 'categories'])->middleware('auth:employee');
