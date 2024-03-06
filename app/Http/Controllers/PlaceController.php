@@ -8,6 +8,7 @@ use App\Helpers\ControllerHelper as cHelper;
 use App\Models\CategoryPlace;
 use App\Models\Place;
 use App\Models\PlaceAddress;
+use Illuminate\Support\Facades\DB;
 
 class PlaceController extends Controller
 {
@@ -30,10 +31,24 @@ class PlaceController extends Controller
             return response()->json(['errors' => $messages], 400);
         }
 
-        return response()->json([
-            'place' => $place,
-            'placeAddress' => $address
-        ], 200);
+        try {
+            DB::beginTransaction();
+                $placeSave = new Place($place);
+                $placeSave->pla_employee_id = auth('employee')->user()->emp_id;
+
+                if($placeSave->save()){
+                    $placeAddressSave = new PlaceAddress($address);
+                    $placeAddressSave->plad_place_id = $placeSave->pla_id;
+        
+                    $placeAddressSave->save();
+                }
+            DB::commit();
+        } catch (\PDOException $e) {
+            DB::rollBack();
+            return response()->json(['errors' => $e->getMessage()], 500);
+        }
+
+        return response()->json();
     }
 
     public function categories(){

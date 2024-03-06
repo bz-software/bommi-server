@@ -3,14 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PlaceAddress extends Model {
-    const CREATED_AT = 'plad_created_at';
+    const CREATED_AT = null;
     const UPDATED_AT = 'plad_changed_at';
 
     protected $primaryKey = "plad_id";
 
     const REQUIRED_MSG = 'Campo obrigatório';
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'places_address';
 
     /**
      * The attributes that are mass assignable.

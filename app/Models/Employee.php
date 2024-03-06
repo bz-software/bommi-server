@@ -35,6 +35,12 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
         "emp_cpf"
     ];
 
+    protected $hidden = [
+        'emp_password',
+        'emp_remember_token'
+    ]; 
+
+
     public static function rules():array {
         return [
             'emp_first_name' => 'required|max:100',

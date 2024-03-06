@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthEmployeeController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PlaceController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,3 +35,5 @@ Route::put('/employee', [EmployeeController::class, 'update']);
 
 Route::post('/place', [PlaceController::class, 'create'])->middleware('auth:employee');
 Route::get('/place/categories', [PlaceController::class, 'categories'])->middleware('auth:employee');
+
+Route::post('/dashboard/init', [DashboardController::class, 'init'])->middleware('auth:employee');

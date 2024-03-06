@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Place extends Model {
     const CREATED_AT = 'pla_created_at';
@@ -57,5 +58,10 @@ class Place extends Model {
                 'required' => self::REQUIRED_MSG
             ],
         ];
+    }
+
+    public function address(): HasOne
+    {
+        return $this->hasOne(PlaceAddress::class, 'plad_place_id');
     }
 }

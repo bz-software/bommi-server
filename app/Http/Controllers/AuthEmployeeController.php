@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\EmployeeType;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\ControllerHelper as cHelper;
 use Carbon\Carbon;
+use App\Models\Place;
 
 class AuthEmployeeController extends Controller
 {
@@ -50,11 +52,21 @@ class AuthEmployeeController extends Controller
         }else{
             $id = auth('employee')->user()->emp_id;
             $employeeLogged =  Employee::where('emp_id', $id)->first();
+            $employeeLogged['emp_type_name'] = EmployeeType::name($employeeLogged['emp_type']);
 
-            return [
-                'user' => $employeeLogged,
-                'token' => $login
-            ];
+            $code = 200;
+            if($employeeLogged['emp_type'] == EmployeeType::Owner->value){
+                $place = Place::where('pla_employee_id', $id)->first();
+
+                if(empty($place)){
+                    $code = 206;
+                }
+            }
+
+            return response()->json([
+                'token' => $login,
+                'user' => $employeeLogged
+            ], $code);
         }
     }
 
@@ -69,6 +81,7 @@ class AuthEmployeeController extends Controller
         $employeeSave = new Employee($request->all());
         $employeeSave->emp_birthdate = Carbon::parse($employeeSave->emp_birthdate)->translatedFormat('Y-m-d');
         $employeeSave->emp_password = Hash::make($request->input('emp_password'));
+        $employeeSave->emp_type = EmployeeType::Owner->value;
         $employeeSave->save();
 
         $login = auth('employee')->attempt(
