@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use App\Enums\EmployeeType;
 use App\Helpers\ControllerHelper as cHelper;
-
+use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
@@ -21,5 +21,11 @@ class EmployeeController extends Controller
         }
 
         return response()->json(['employeeTypes' => $array], 200);
+    }
+
+    public function getByOwner(Request $request){
+        $cpf = $request->query('cpf');
+
+        return $cpf;
     }
 }
