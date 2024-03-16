@@ -30,8 +30,9 @@ Route::post('/auth/employee', [AuthEmployeeController::class, 'create']);
 
 Route::get('/employee', [EmployeeController::class, 'read']);
 Route::get('/employees', [EmployeeController::class, 'list']);
+Route::get('/employees/init', [EmployeeController::class, 'init']);
 Route::get('/employee/{id}', [EmployeeController::class, 'one']);
-Route::put('/employee', [EmployeeController::class, 'update']);
+Route::put('/employee', [EmployeeController::class, 'update'])->middleware('auth:employee');
 
 Route::post('/place', [PlaceController::class, 'create'])->middleware('auth:employee');
 Route::get('/place/categories', [PlaceController::class, 'categories'])->middleware('auth:employee');

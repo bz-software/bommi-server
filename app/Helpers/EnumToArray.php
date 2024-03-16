@@ -11,7 +11,15 @@ trait EnumToArray {
     }
 
     public static function array(): array{
-        return array_combine(self::values(), self::names());
+        $data = array_combine(self::values(), self::names());
+
+        $arrayReturn = array();
+
+        foreach($data as $i => $value){
+            array_push($arrayReturn, ['value' => $i, 'text' => $value]);
+        }
+
+        return $arrayReturn;
     }
 
     public static function name($id){
