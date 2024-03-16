@@ -13,6 +13,7 @@ use App\Models\Place;
 
 class AuthEmployeeController extends Controller
 {
+    
     public function __construct(){
         $this->middleware('auth:employee', ['except' => [
             'create',
@@ -54,19 +55,10 @@ class AuthEmployeeController extends Controller
             $employeeLogged =  Employee::where('emp_id', $id)->first();
             $employeeLogged['emp_type_name'] = EmployeeType::name($employeeLogged['emp_type']);
 
-            $code = 200;
-            if($employeeLogged['emp_type'] == EmployeeType::Owner->value){
-                $place = Place::where('pla_employee_id', $id)->first();
-
-                if(empty($place)){
-                    $code = 206;
-                }
-            }
-
             return response()->json([
                 'token' => $login,
                 'user' => $employeeLogged
-            ], $code);
+            ], 200);
         }
     }
 
