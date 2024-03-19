@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EmployeeType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -101,6 +102,52 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
         $employeeModel = Employee::find(auth('employee')->user()->emp_id);
         $employeeModel->emp_place_id_logged = $idPlace;
         return $employeeModel->save();
+    }
+
+    public static function getByCpf($cpf, $except = null){
+        // TODO: verificar como adicionar condicionais na query
+        if(!empty($except)){
+            $employee = Employee::select('*')
+                ->where('emp_cpf', '=', $cpf)
+                ->where('emp_id', '!=', $except)
+                ->where('emp_deleted', '=', false)->first();
+        }else{
+            $employee = Employee::select('*')
+            ->where('emp_cpf', '=', $cpf)
+            ->where('emp_deleted', '=', false)->first();
+        }
+        
+        return $employee;
+    }
+
+    public static function getById($id, $idPlace = null){
+        $employee = Employee::find($id);
+
+        return self::setType($employee, $idPlace);
+    }
+
+    public static function setType($employee, $idPlace = null){
+        $employee['emp_type'] = null;
+        $employee['emp_type_name'] = null;
+
+        $idPlace = empty($idPlace) ? $employee['emp_place_id_logged'] : $idPlace;
+
+        if(!empty($idPlace)){
+            $pe = EmployeePlace::select('*')
+                ->where('ep_employee_id', '=', $employee['emp_id'])
+                ->where('ep_place_id', '=', $idPlace)
+                ->where('ep_deleted', '=', false)
+                ->first();
+            
+            if(!empty($pe)){
+                $idType = $pe['ep_employee_type'];
+
+                $employee['emp_type'] = $pe['ep_employee_type'];
+                $employee['emp_type_name'] = EmployeeType::name($idType);
+            }
+        }
+        
+        return $employee;
     }
 
     /**

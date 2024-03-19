@@ -52,8 +52,7 @@ class AuthEmployeeController extends Controller
             return response()->json($message, 400);
         }else{
             $id = auth('employee')->user()->emp_id;
-            $employeeLogged =  Employee::where('emp_id', $id)->first();
-            $employeeLogged['emp_type_name'] = EmployeeType::name($employeeLogged['emp_type']);
+            $employeeLogged =  Employee::getById($id);
 
             return response()->json([
                 'token' => $login,

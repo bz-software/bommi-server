@@ -25,28 +25,27 @@ class EmployeeController extends Controller
         return response()->json(['employeeTypes' => $array], 200);
     }
 
-    public function getByOwner(Request $request){
+    public function one(Request $request){
+        $messages = array();
+
         cHelper::employeeNeedsSelectPlace();
+        $idOwner = auth('employee')->user()->emp_id;
+        $owner = Employee::find($idOwner);
         $cpf = $request->query('cpf');
 
-        if(!empty($cpf)){
-            $idOwner = auth('employee')->user()->emp_id;
+        if($cpf == $owner->emp_cpf){
+            $messages['cpf'] = "Para se denominar um funcionário, ative a opção nas configurações pessoais.";
+            return response()->json(['errors' => $messages], 400);
+        }
 
-            // SELECT * FROM employees e
-            // INNER JOIN employees_place ep ON ep.ep_employee_id = e.emp_id
-            // INNER JOIN places p ON p.pla_id = ep.ep_place_id
-            // WHERE p.pla_employee_id = 65
-            // AND e.emp_id != 65
-    
-            $employees =  Employee::select('*')
-                ->join('employees_place', 'employees_place.ep_employee_id', '=', 'employees.emp_id')
-                ->join('places', 'places.pla_id', '=', 'employees_place.ep_place_id')
-            ->where('places.pla_employee_id', $idOwner)
-            ->where('employees.emp_id', '!=', $idOwner)
-            ->where('employees.emp_cpf', 'LIKE', $cpf.'%')
-            ->get();
-    
-            return response()->json(['employees' => $employees], 200);
+        if(!empty($cpf)){
+            $employee = Employee::getByCpf($cpf, $idOwner);
+            
+            if(!empty($employee)){
+                return response()->json(['employee' => $employee], 200);
+            }else{
+                return response()->json([], 404);
+            }
         }
     }
 }
