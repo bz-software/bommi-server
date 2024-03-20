@@ -5,7 +5,7 @@ use App\Enums\EmployeeType;
 use App\Helpers\ControllerHelper as cHelper;
 use App\Models\Employee;
 use Illuminate\Http\Request;
-use PDO;
+use Illuminate\Support\Facades\Validator;
 
 class EmployeeController extends Controller
 {
@@ -35,6 +35,12 @@ class EmployeeController extends Controller
 
         if($cpf == $owner->emp_cpf){
             $messages['cpf'] = "Para se denominar um funcionário, ative a opção nas configurações pessoais.";
+            return response()->json(['errors' => $messages], 400);
+        }
+
+        $cpfValidator = Validator::make(['emp_cpf' => $cpf], ['emp_cpf' => 'required|cpf|size:11'], Employee::messages());
+        if($cpfValidator->fails()){
+            $messages = cHelper::getAllFirstMessages($cpfValidator->errors()->toArray());
             return response()->json(['errors' => $messages], 400);
         }
 
