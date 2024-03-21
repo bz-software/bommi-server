@@ -18,6 +18,17 @@ class EmployeePlace extends Model {
      */
     protected $table = 'employees_place';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        "ep_place_id",
+        "ep_employee_id",
+        "ep_deleted"
+    ];
+
 
     public static function get($idEmployee, $idPlace){
         $employeePlace = EmployeePlace::select('*')
@@ -40,7 +51,7 @@ class EmployeePlace extends Model {
     public static function create($idEmployee, $idPlace, $type){
         $model = new EmployeePlace();
         $model->ep_place_id = $idPlace;
-        $model->ep_emp_id = $idEmployee;
+        $model->ep_employee_id = $idEmployee;
         $model->ep_employee_type = $type;
 
         return $model->save();

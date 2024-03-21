@@ -66,6 +66,8 @@ class EmployeeController extends Controller
         $reuse = $request->get('reuse'); // Define se deve criar um funcionario ou apenas a referencia para o estabelecimento
         $idPlace = auth('employee')->user()->emp_place_id_logged;
 
+        $typeValidator = Validator::make(['emp_type' => $employee['emp_type']], ['emp_type' => 'required'], ['required' => 'Campo obrigatório']);
+
         if(boolval($reuse)){
             $messageEmpty = 'Esse funcionário não existe';
             if(empty($employee['emp_id'])){
@@ -86,6 +88,11 @@ class EmployeeController extends Controller
                 $messages['emp_cpf'] = "Funcionário já cadastrado nesse estabelecimento";
                 return response()->json(['errors' => $messages], 400);
             }else{
+                if($typeValidator->fails()){
+                    $messages = cHelper::getAllFirstMessages($typeValidator->errors()->toArray());
+                    return response()->json(['errors' => $messages], 400);
+                }
+
                 EmployeePlace::create($employeeFounded->emp_id, $idPlace, $employee['emp_type']);
 
                 return response()->json(['employee' => Employee::getById($employeeFounded->emp_id, $idPlace)], 200);
@@ -98,11 +105,15 @@ class EmployeeController extends Controller
                 return response()->json(['errors' => $messages], 400);
             }
     
-            $employeeSave = new Employee($request->all());
+            $employeeSave = new Employee($employee);
             $employeeSave->emp_birthdate = Carbon::parse($employeeSave->emp_birthdate)->translatedFormat('Y-m-d');
-            $employeeSave->emp_password = Hash::make($request->input('emp_password'));
-            $employeeSave->emp_type = EmployeeType::Owner->value;
+            $employeeSave->emp_password = Hash::make($employeeSave->emp_password);
+            $employeeSave->emp_type = $employee['emp_type'];
             $employeeSave->save();
+
+            EmployeePlace::create($employeeSave->emp_id, $idPlace, $employeeSave->emp_type);
+
+            return response()->json(['employee' => Employee::getById($employeeSave->emp_id, $idPlace)], 200);
         }
 
 
