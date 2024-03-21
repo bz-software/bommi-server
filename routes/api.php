@@ -29,6 +29,7 @@ Route::post('/auth/employee/refresh', [AuthEmployeeController::class, 'refresh']
 Route::post('/auth/employee', [AuthEmployeeController::class, 'create']);
 
 Route::get('/employee', [EmployeeController::class, 'read']);
+Route::post('/employee', [EmployeeController::class, 'create']);
 Route::get('/employees', [EmployeeController::class, 'list']);
 Route::get('/employees/init', [EmployeeController::class, 'init']);
 Route::put('/employee', [EmployeeController::class, 'update'])->middleware('auth:employee');

@@ -46,7 +46,7 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
         return [
             'emp_first_name' => 'required|max:100',
             'emp_last_name' => 'max:100',
-            'emp_cpf' => 'required|cpf|size:11',
+            'emp_cpf' => 'required|cpf|size:11|unique:employees,emp_cpf,NULL,emp_id,emp_deleted,0',
             'emp_birthdate' => 'required|date|before_or_equal:'.now()->subYears(18)->format('Y-m-d'),
             'emp_email' => 'required|email|unique:employees,emp_email,NULL,emp_id,emp_deleted,0',
             'emp_password' => 'required|min:6',
@@ -65,7 +65,8 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
 
             'emp_cpf' => [
                 'required' => "Campo obrigatório",
-                'size' => 'CPF Incompleto'
+                'size' => 'CPF Incompleto',
+                'unique' => 'O CPF fornecido já está em uso'
             ],
 
             'emp_birthdate' => [
@@ -121,7 +122,10 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
     }
 
     public static function getById($id, $idPlace = null){
-        $employee = Employee::find($id);
+        $employee = Employee::select('*')
+            ->where('emp_deleted', '=', false)
+            ->where('emp_id', '=', $id)
+            ->first();
 
         return self::setType($employee, $idPlace);
     }

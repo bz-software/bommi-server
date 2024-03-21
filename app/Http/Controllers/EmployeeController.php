@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 use App\Enums\EmployeeType;
 use App\Helpers\ControllerHelper as cHelper;
 use App\Models\Employee;
+use App\Models\EmployeePlace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class EmployeeController extends Controller
 {
@@ -34,7 +37,7 @@ class EmployeeController extends Controller
         $cpf = $request->query('cpf');
 
         if($cpf == $owner->emp_cpf){
-            $messages['cpf'] = "Para se denominar um funcionário, ative a opção nas configurações pessoais.";
+            $messages['emp_cpf'] = "Para se denominar um funcionário, ative a opção nas configurações pessoais.";
             return response()->json(['errors' => $messages], 400);
         }
 
@@ -53,5 +56,55 @@ class EmployeeController extends Controller
                 return response()->json([], 404);
             }
         }
+    }
+
+    public function create(Request $request){
+        cHelper::employeeNeedsSelectPlace();
+
+        $messages = array();
+        $employee = $request->get('employee');
+        $reuse = $request->get('reuse'); // Define se deve criar um funcionario ou apenas a referencia para o estabelecimento
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+
+        if(boolval($reuse)){
+            $messageEmpty = 'Esse funcionário não existe';
+            if(empty($employee['emp_id'])){
+                $messages['emp_cpf'] = $messageEmpty;
+                return response()->json(['errors' => $messages], 400);
+            }
+
+            // Verificando se não está excluido
+            $idEmp = $employee['emp_id'];
+            $employeeFounded = Employee::getById($idEmp);
+
+            if(empty($employeeFounded)){
+                $messages['emp_cpf'] = $messageEmpty;
+                return response()->json(['errors' => $messages], 400);
+            }
+
+            if(EmployeePlace::exist($employeeFounded->emp_id, $idPlace)){
+                $messages['emp_cpf'] = "Funcionário já cadastrado nesse estabelecimento";
+                return response()->json(['errors' => $messages], 400);
+            }else{
+                EmployeePlace::create($employeeFounded->emp_id, $idPlace, $employee['emp_type']);
+
+                return response()->json(['employee' => Employee::getById($employeeFounded->emp_id, $idPlace)], 200);
+            }
+
+        }else{
+            $empValidator = Validator::make($employee, Employee::rules(), Employee::messages());
+            if($empValidator->fails()){
+                $messages = cHelper::getAllFirstMessages($empValidator->errors()->toArray());
+                return response()->json(['errors' => $messages], 400);
+            }
+    
+            $employeeSave = new Employee($request->all());
+            $employeeSave->emp_birthdate = Carbon::parse($employeeSave->emp_birthdate)->translatedFormat('Y-m-d');
+            $employeeSave->emp_password = Hash::make($request->input('emp_password'));
+            $employeeSave->emp_type = EmployeeType::Owner->value;
+            $employeeSave->save();
+        }
+
+
     }
 }
