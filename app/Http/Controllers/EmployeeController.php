@@ -118,7 +118,15 @@ class EmployeeController extends Controller
 
             return response()->json(['employee' => Employee::getById($employeeSave->emp_id, $idPlace)], 200);
         }
+    }
+
+    public function list(){
+        cHelper::employeeNeedsSelectPlace();
+        $idUser = auth('employee')->user()->emp_id;
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
 
 
+        $employees = Employee::getAllActiveByPlace($idPlace, $idUser);
+        return response()->json(['employees' => $employees], 200);
     }
 }
