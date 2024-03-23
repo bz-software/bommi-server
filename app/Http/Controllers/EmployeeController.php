@@ -66,7 +66,15 @@ class EmployeeController extends Controller
         $reuse = $request->get('reuse'); // Define se deve criar um funcionario ou apenas a referencia para o estabelecimento
         $idPlace = auth('employee')->user()->emp_place_id_logged;
 
-        $typeValidator = Validator::make(['emp_type' => $employee['emp_type']], ['emp_type' => 'required'], ['required' => 'Campo obrigatório']);
+        $typeValidator = Validator::make($employee, [
+            'emp_type' => 'required',
+            'emp_cpf'  => 'required'
+        ], ['required' => 'Campo obrigatório']);
+
+        if($typeValidator->fails()){
+            $messages = cHelper::getAllFirstMessages($typeValidator->errors()->toArray());
+            return response()->json(['errors' => $messages], 400);
+        }
 
         if(boolval($reuse)){
             $messageEmpty = 'Esse funcionário não existe';
@@ -88,11 +96,6 @@ class EmployeeController extends Controller
                 $messages['emp_cpf'] = "Funcionário já cadastrado nesse estabelecimento";
                 return response()->json(['errors' => $messages], 400);
             }else{
-                if($typeValidator->fails()){
-                    $messages = cHelper::getAllFirstMessages($typeValidator->errors()->toArray());
-                    return response()->json(['errors' => $messages], 400);
-                }
-
                 EmployeePlace::create($employeeFounded->emp_id, $idPlace, $employee['emp_type']);
 
                 return response()->json(['employee' => Employee::getById($employeeFounded->emp_id, $idPlace)], 200);
