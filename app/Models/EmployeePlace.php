@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class EmployeePlace extends Model {
@@ -55,5 +56,35 @@ class EmployeePlace extends Model {
         $model->ep_employee_type = $type;
 
         return $model->save();
+    }
+
+    public static function unset($idEmployee){
+        $now = Carbon::now();
+        $idOwner = auth('employee')->user()->emp_id;
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+
+        // SELECT ep.* FROM employees_place ep
+        // INNER JOIN places p ON p.pla_id = ep.ep_place_id
+        // INNER JOIN employees owner ON owner.emp_id = p.pla_employee_id
+        // WHERE p.pla_id = 7
+        // AND owner.emp_id = 65
+        // AND ep.ep_employee_id = 66;
+
+        $employeePlace = EmployeePlace::select('employees_place.*')
+            ->join('places as p', 'p.pla_id', '=', 'employees_place.ep_place_id')
+            ->join('employees as owner', 'owner.emp_id', '=', 'p.pla_employee_id')
+            ->where('p.pla_id', '=', $idPlace)
+            ->where('owner.emp_id', '=', $idOwner)
+            ->where('employees_place.ep_employee_id', '=', $idEmployee)
+            ->first();
+
+        if(!empty($employeePlace)){
+            $employeePlace->ep_deleted = true;
+            $employeePlace->ep_deleted_at = $now->toDateTimeString();
+            
+            return $employeePlace->save();
+        }
+
+        return false;
     }
 }

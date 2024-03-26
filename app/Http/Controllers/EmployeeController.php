@@ -129,4 +129,18 @@ class EmployeeController extends Controller
         $employees = Employee::getAllActiveByPlace($idPlace, $idUser);
         return response()->json(['employees' => $employees], 200);
     }
+
+    public function delete($id){
+        cHelper::employeeNeedsSelectPlace();
+        
+        $idEmployee = $id;
+
+
+        $success = EmployeePlace::unset($idEmployee);
+        if($success){
+            return response()->json([], 200);
+        }else{
+            return response()->json([], 500);
+        }
+    }
 }

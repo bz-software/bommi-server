@@ -166,12 +166,14 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
                 ->where('employees_place.ep_place_id', '=', $idPlace)
                 ->where('employees.emp_deleted', '=', 0)
                 ->where('employees.emp_id', '!=', $employeeExcept)
+                ->where('employees_place.ep_deleted', '=', false)
                 ->get();
         }else{
             $employees = Employee::select('*')
                 ->join('employees_place', 'employees_place.ep_employee_id', '=', 'employees.emp_id')
                 ->where('employees_place.ep_place_id', '=', $idPlace)
                 ->where('employees.emp_deleted', '=', 0)
+                ->where('employees_place.ep_deleted', '=', false)
                 ->get();
         }
 

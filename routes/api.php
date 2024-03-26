@@ -34,6 +34,7 @@ Route::get('/admin/employees', [EmployeeController::class, 'list'])->middleware(
 Route::get('/employees/init', [EmployeeController::class, 'init']);
 Route::put('/employee', [EmployeeController::class, 'update'])->middleware('auth:employee');
 Route::get('/employee', [EmployeeController::class, 'one']);
+Route::delete('/admin/employee/{id}', [EmployeeController::class, 'delete']);
 
 Route::post('/place', [PlaceController::class, 'create'])->middleware('auth:employee');
 Route::get('/place/categories', [PlaceController::class, 'categories'])->middleware('auth:employee');
