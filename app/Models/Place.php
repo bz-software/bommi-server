@@ -60,6 +60,46 @@ class Place extends Model {
         ];
     }
 
+    /**
+     * Retorna o estabelecimento do funcionario logado
+     * @return null|array[]|array
+     */
+    public static function getByIdEmployee($id){
+        $employee =  Employee::where('emp_id', $id)->first();
+
+        if(empty($employee['emp_place_id_logged'])){
+            // Buscando todos os estabelecimentos que o funcionario pode acessar
+            $places = Place::select('*')
+                ->join('employees_place', 'employees_place.ep_place_id', '=', 'places.pla_id')
+            ->where('employees_place.ep_employee_id', $id)
+            ->get();
+
+            $total = intval($places->count());
+            
+            if($total > 1){
+                // se for maior que um, retorna todos
+                return $places->load('address');
+            }else if($total == 0){
+                return null;
+            }else{
+                // se for um, seta ele como o estabelecimento em uso e retorna o mesmo
+                $place = $places->first();
+                Employee::setPlaceLogged($place->pla_id);
+
+                return $place->load('address');
+            }
+        }else{
+            // caso o funcionario tenha um estabelecimento em uso, primeiro verifica se ele ainda tem acesso e depois o retorna
+            $place = Place::select('*')
+                ->join('employees_place', 'employees_place.ep_place_id', '=', 'places.pla_id')
+            ->where('employees_place.ep_employee_id', $id)
+            ->where('employees_place.ep_place_id', $employee['emp_place_id_logged'])
+            ->first();
+
+            return $place->load('address');
+        }
+    }
+
     public function address(): HasOne
     {
         return $this->hasOne(PlaceAddress::class, 'plad_place_id');

@@ -12,17 +12,12 @@ use App\Models\Place;
 class DashboardController extends Controller
 {
     public function init(Request $request){
-        $idEmployee = auth('employee')->user()->emp_id;
-
-        $employee = Employee::find($idEmployee);
-        $employee['hierarchy'] = EmployeeType::name($employee['emp_type']);
-
-        if($employee['emp_type'] == EmployeeType::Owner->value){
-            $place = Place::where('pla_employee_id', $idEmployee)->first();
-        }
+        cHelper::employeeNeedsSelectPlace();
+        
+        $place = Place::getByIdEmployee(auth('employee')->user()->emp_id);  
 
         return response()->json([
-            'place' => $place->load('address'),
+            'place' => $place,
         ], 200);
     }
 }

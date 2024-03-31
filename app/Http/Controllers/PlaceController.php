@@ -9,6 +9,9 @@ use App\Models\CategoryPlace;
 use App\Models\Place;
 use App\Models\PlaceAddress;
 use Illuminate\Support\Facades\DB;
+use App\Models\EmployeePlace;
+use App\Models\Employee;
+use App\Enums\EmployeeType;
 
 class PlaceController extends Controller
 {
@@ -39,8 +42,15 @@ class PlaceController extends Controller
                 if($placeSave->save()){
                     $placeAddressSave = new PlaceAddress($address);
                     $placeAddressSave->plad_place_id = $placeSave->pla_id;
-        
                     $placeAddressSave->save();
+
+                    $employeePlace = new EmployeePlace();
+                    $employeePlace->ep_place_id = $placeSave->pla_id;
+                    $employeePlace->ep_employee_id = auth('employee')->user()->emp_id;
+                    $employeePlace->ep_employee_type = EmployeeType::Owner->value;
+                    $employeePlace->save();
+
+                    Employee::setPlaceLogged($placeSave->pla_id);
                 }
             DB::commit();
         } catch (\PDOException $e) {

@@ -29,9 +29,12 @@ Route::post('/auth/employee/refresh', [AuthEmployeeController::class, 'refresh']
 Route::post('/auth/employee', [AuthEmployeeController::class, 'create']);
 
 Route::get('/employee', [EmployeeController::class, 'read']);
-Route::get('/employees', [EmployeeController::class, 'list']);
-Route::get('/employee/{id}', [EmployeeController::class, 'one']);
-Route::put('/employee', [EmployeeController::class, 'update']);
+Route::post('/employee', [EmployeeController::class, 'create']);
+Route::get('/admin/employees', [EmployeeController::class, 'list'])->middleware('auth:employee');
+Route::get('/employees/init', [EmployeeController::class, 'init']);
+Route::put('/employee', [EmployeeController::class, 'update'])->middleware('auth:employee');
+Route::get('/employee', [EmployeeController::class, 'one']);
+Route::delete('/admin/employee/{id}', [EmployeeController::class, 'delete']);
 
 Route::post('/place', [PlaceController::class, 'create'])->middleware('auth:employee');
 Route::get('/place/categories', [PlaceController::class, 'categories'])->middleware('auth:employee');
