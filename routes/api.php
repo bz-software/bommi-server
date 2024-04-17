@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthEmployeeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PlaceController;
+use App\Http\Controllers\CategoryServiceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,3 +41,6 @@ Route::post('/place', [PlaceController::class, 'create'])->middleware('auth:empl
 Route::get('/place/categories', [PlaceController::class, 'categories'])->middleware('auth:employee');
 
 Route::post('/dashboard/init', [DashboardController::class, 'init'])->middleware('auth:employee');
+
+Route::get('/admin/category-services', [CategoryServiceController::class, 'list'])->middleware('auth:employee');
+Route::post('/admin/category-services', [CategoryServiceController::class, 'create'])->middleware('auth:employee');
