@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\CategoryServiceController;
+use App\Http\Controllers\ServicePlaceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,10 +38,15 @@ Route::put('/employee', [EmployeeController::class, 'update'])->middleware('auth
 Route::get('/employee', [EmployeeController::class, 'one']);
 Route::delete('/admin/employee/{id}', [EmployeeController::class, 'delete']);
 
+/**
+ * [PLACES]
+ */
 Route::post('/place', [PlaceController::class, 'create'])->middleware('auth:employee');
 Route::get('/place/categories', [PlaceController::class, 'categories'])->middleware('auth:employee');
+//PUBLICS
+Route::get('/place/services/categories', [CategoryServiceController::class, 'list']);
+Route::get('/place/services/{id}', [ServicePlaceController::class, 'byCategory'])->middleware('auth:employee');
+//ADMIN
+// TODO: ADICIONAR ENDPOINT PARA CRUD DE SERVIÇOS
 
 Route::post('/dashboard/init', [DashboardController::class, 'init'])->middleware('auth:employee');
-
-Route::get('/admin/category-services', [CategoryServiceController::class, 'list'])->middleware('auth:employee');
-Route::post('/admin/category-services', [CategoryServiceController::class, 'create'])->middleware('auth:employee');
