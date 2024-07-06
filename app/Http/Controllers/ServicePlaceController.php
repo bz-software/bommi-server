@@ -7,6 +7,7 @@ use App\Models\EmployeePlace;
 use App\Models\ServicePlace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\VarDumper\VarDumper;
 
 class ServicePlaceController extends Controller
 {
@@ -17,7 +18,36 @@ class ServicePlaceController extends Controller
 
     public function create(Request $request){
         cHelper::employeeNeedsSelectPlace();
+
         $idPlace = auth('employee')->user()->emp_place_id_logged;
+
+        $data = $request->all();
+        $validator = Validator::make($data, ServicePlace::rules(), ServicePlace::messages());
+        if($validator->fails()){
+            return response()->json([
+                'errors' => cHelper::getAllFirstMessages($validator->errors()->toArray())
+            ], 400);
+        }
+
+        $serviceFounded = ServicePlace::getByNameAndCategory($data['sepl_case_id'], $data['sepl_name']);
+        if(!empty($serviceFounded)){
+            $message['sepl_name'] = "Serviço já cadastrado";
+            return response()->json([
+                'errors' => $message
+            ], 400);
+        }
+
+        if(empty(CategoryService::getByIdAndPlace($data['sepl_case_id'], $idPlace))){
+            $message['sepl_name'] = "Categoria não pertence ao estabelecimento em uso";
+            return response()->json([
+                'errors' => $message
+            ], 400);
+        }
+
+        $service = new ServicePlace($data);
+        if($service->save()){
+            return response()->json($service);
+        }
     }
 
     public function list(){

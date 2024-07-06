@@ -37,7 +37,6 @@ class ServicePlace extends Model {
             'sepl_name' => 'required|max:200',
             'sepl_description' => 'max:400',
             'sepl_case_id' => 'required',
-            'sepl_case_id' => 'required',
             'sepl_price' => 'required',
             'sepl_duration' => 'required'
         ];
@@ -74,6 +73,16 @@ class ServicePlace extends Model {
             ->where('sepl_case_id', $idCategory)
             ->where('sepl_deleted', false)
         ->get();
+
+        return $data;
+    }
+
+    public static function getByNameAndCategory($idCategory, $name){
+        $data = ServicePlace::select("*")
+            ->whereRaw('LOWER(sepl_name) = ?', [$name])
+            ->where('sepl_case_id', $idCategory)
+            ->where('sepl_deleted', false)
+        ->first();
 
         return $data;
     }

@@ -41,14 +41,13 @@ Route::delete('/admin/employee/{id}', [EmployeeController::class, 'delete']);
 /**
  * [PLACES]
  */
-
 //PUBLICS
 Route::get('/place/categories', [PlaceController::class, 'categories']);
 Route::get('/place/services/categories', [CategoryServiceController::class, 'list']);
 Route::get('/place/services/{id}', [ServicePlaceController::class, 'byCategory']);
 //ADMIN
 Route::post('/admin/place', [PlaceController::class, 'create'])->middleware('auth:employee');
-Route::post('/admin/place/services/categories', [CategoryServiceController::class, 'create'])->middleware('auth:employee');
-// TODO: ADICIONAR ENDPOINT PARA CRUD DE SERVIÇOS
+Route::post('/admin/place/service/category', [CategoryServiceController::class, 'create'])->middleware('auth:employee');
+Route::post('/admin/place/service', [ServicePlaceController::class, 'create'])->middleware('auth:employee');
 
 Route::post('/dashboard/init', [DashboardController::class, 'init'])->middleware('auth:employee');

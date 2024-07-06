@@ -68,4 +68,12 @@ class CategoryService extends Model {
             ->where('case_deleted', '=', false)
         ->get();
     }
+
+    public static function getByIdAndPlace($id, $idPlace){
+        return CategoryService::select("*")
+            ->where('case_id', '=', $id)
+            ->where('case_place_id', $idPlace)
+            ->where('case_deleted', '=', false)
+        ->first();
+    }
 }
