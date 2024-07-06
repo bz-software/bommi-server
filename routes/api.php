@@ -45,6 +45,7 @@ Route::delete('/admin/employee/{id}', [EmployeeController::class, 'delete']);
 Route::get('/place/categories', [PlaceController::class, 'categories']);
 Route::get('/place/services/categories', [CategoryServiceController::class, 'list']);
 Route::get('/place/services/{id}', [ServicePlaceController::class, 'byCategory']);
+Route::get('/place/service/{id}', [ServicePlaceController::class, 'one']);
 //ADMIN
 Route::post('/admin/place', [PlaceController::class, 'create'])->middleware('auth:employee');
 Route::post('/admin/place/service/category', [CategoryServiceController::class, 'create'])->middleware('auth:employee');

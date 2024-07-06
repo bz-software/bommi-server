@@ -12,8 +12,10 @@ use Symfony\Component\VarDumper\VarDumper;
 class ServicePlaceController extends Controller
 {
 
-    public function one(Request $request){
+    public function one($id){
         cHelper::employeeNeedsSelectPlace();
+
+        return response()->json(ServicePlace::getById($id));
     }
 
     public function create(Request $request){

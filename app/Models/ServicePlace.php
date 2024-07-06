@@ -86,4 +86,13 @@ class ServicePlace extends Model {
 
         return $data;
     }
+
+    public static function getById($id){
+        $data = ServicePlace::select("*")
+            ->where('sepl_id', $id)
+            ->where('sepl_deleted', false)
+        ->first();
+
+        return $data;
+    }
 }
