@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\VarDumper\VarDumper;
 
+/**
+ * Serviços que o estabelecimento realiza
+ */
 class ServicePlaceController extends Controller
 {
 
@@ -59,7 +62,38 @@ class ServicePlaceController extends Controller
 
     public function delete($id){
         cHelper::employeeNeedsSelectPlace();
-        $idEmployee = $id;
+        
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+        $id = intval($id);
+
+        if(empty($id)){
+            return response()->json([
+                'errors' => ['sepl_id' => 'Campo obrigatório']
+            ], 400);
+        }
+
+        $service = ServicePlace::getById($id);
+        if(empty($service)){
+            return response()->json([
+                'errors' => ['sepl_id' => 'Serviço não encontrado']
+            ], 400);
+        }
+
+        $category = CategoryService::getByIdAndPlace($service['sepl_case_id'], $idPlace);
+        if(empty($category)){
+            return response()->json([
+                'errors' => ['sepl_id' => 'Serviço não pertence à categoria do estabelecimento em uso']
+            ], 400);
+        }
+
+        $service->sepl_deleted = true;
+        $success = $service->save();
+
+        if($success){
+            return response()->json([], 200);
+        }else{
+            return response()->json([], 500);
+        }
     }
 
     public function byCategory($idCategory){

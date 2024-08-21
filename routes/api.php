@@ -50,5 +50,6 @@ Route::get('/place/service/{id}', [ServicePlaceController::class, 'one']);
 Route::post('/admin/place', [PlaceController::class, 'create'])->middleware('auth:employee');
 Route::post('/admin/place/service/category', [CategoryServiceController::class, 'create'])->middleware('auth:employee');
 Route::post('/admin/place/service', [ServicePlaceController::class, 'create'])->middleware('auth:employee');
+Route::delete('/admin/place/service/{id}', [ServicePlaceController::class, 'delete'])->middleware('auth:employee');
 
 Route::post('/dashboard/init', [DashboardController::class, 'init'])->middleware('auth:employee');
