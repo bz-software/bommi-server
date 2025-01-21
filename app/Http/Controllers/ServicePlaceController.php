@@ -96,6 +96,45 @@ class ServicePlaceController extends Controller
         }
     }
 
+    /**
+     * TODO: validate whether the updated service name already exists in another service
+     */
+    public function update(Request $request){
+        cHelper::employeeNeedsSelectPlace();
+
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+
+        $data = $request->all();
+
+        $validator = Validator::make($data, ServicePlace::rules(false), ServicePlace::messages());
+        if($validator->fails()){
+            return response()->json([
+                'errors' => cHelper::getAllFirstMessages($validator->errors()->toArray())
+            ], 400);
+        }
+
+        if(empty(CategoryService::getByIdAndPlace($data['sepl_case_id'], $idPlace))){
+            $message['sepl_name'] = "Categoria não pertence ao estabelecimento em uso";
+            return response()->json([
+                'errors' => $message
+            ], 400);
+        }
+
+        $service = ServicePlace::getById($data['sepl_id']);
+        if(empty($service)){
+            $message['sepl_name'] = "Serviço não encontrado";
+            return response()->json([
+                'errors' => $message
+            ], 400);
+        }
+
+        $service->update($data);
+
+        if($service->save()){
+            return response()->json($service);
+        }
+    }
+
     public function byCategory($idCategory){
         cHelper::employeeNeedsSelectPlace();
         $category = CategoryService::getById($idCategory);

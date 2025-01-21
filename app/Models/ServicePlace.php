@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Symfony\Component\VarDumper\VarDumper;
 
 class ServicePlace extends Model {
     const CREATED_AT = null;
@@ -32,18 +33,30 @@ class ServicePlace extends Model {
         "sepl_duration"
     ];
 
-    public static function rules():array {
-        return [
+    public static function rules($insert = true):array {
+        $rules = [
             'sepl_name' => 'required|max:200',
             'sepl_description' => 'max:400',
             'sepl_case_id' => 'required',
             'sepl_price' => 'required',
             'sepl_duration' => 'required'
         ];
+
+        if($insert){
+            return $rules;
+        }else{
+            $rules['sepl_id'] = 'required';
+
+            return $rules;
+        } 
     }
 
     public static function messages():array {
         return [
+            'sepl_id' => [
+                'required' => self::REQUIRED_MSG,
+            ],
+
             'sepl_name' => [
                 'required' => self::REQUIRED_MSG,
                 'max' => 'O nome deve conter no máximo 200 caracteres'

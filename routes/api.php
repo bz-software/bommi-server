@@ -25,18 +25,24 @@ Route::get('/ping', function(){
 
 Route::get('/401', [AuthEmployeeController::class, 'unauthorized'])->name('login');
 
+/**
+ * [EMPLOYEES]
+ */
+// AUTH
 Route::post('/auth/employee/login', [AuthEmployeeController::class, 'login']);
 Route::post('/auth/employee/logout', [AuthEmployeeController::class, 'logout']);
 Route::post('/auth/employee/refresh', [AuthEmployeeController::class, 'refresh']);
 Route::post('/auth/employee', [AuthEmployeeController::class, 'create']);
-
+//PUBLICS
 Route::get('/employee', [EmployeeController::class, 'read']);
 Route::post('/employee', [EmployeeController::class, 'create']);
-Route::get('/admin/employees', [EmployeeController::class, 'list'])->middleware('auth:employee');
-Route::get('/employees/init', [EmployeeController::class, 'init']);
 Route::put('/employee', [EmployeeController::class, 'update'])->middleware('auth:employee');
 Route::get('/employee', [EmployeeController::class, 'one']);
+Route::get('/employees/types', [EmployeeController::class, 'types']);
+//ADMIN
+Route::get('/admin/employees', [EmployeeController::class, 'list'])->middleware('auth:employee');
 Route::delete('/admin/employee/{id}', [EmployeeController::class, 'delete']);
+
 
 /**
  * [PLACES]
@@ -51,5 +57,6 @@ Route::post('/admin/place', [PlaceController::class, 'create'])->middleware('aut
 Route::post('/admin/place/service/category', [CategoryServiceController::class, 'create'])->middleware('auth:employee');
 Route::post('/admin/place/service', [ServicePlaceController::class, 'create'])->middleware('auth:employee');
 Route::delete('/admin/place/service/{id}', [ServicePlaceController::class, 'delete'])->middleware('auth:employee');
+Route::put('/admin/place/service', [ServicePlaceController::class, 'update'])->middleware('auth:employee');
 
 Route::post('/dashboard/init', [DashboardController::class, 'init'])->middleware('auth:employee');
