@@ -105,18 +105,14 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
         return $employeeModel->save();
     }
 
-    public static function getByCpf($cpf, $except = null){
-        // TODO: verificar como adicionar condicionais na query
-        if(!empty($except)){
-            $employee = Employee::select('*')
-                ->where('emp_cpf', '=', $cpf)
-                ->where('emp_id', '!=', $except)
-                ->where('emp_deleted', '=', false)->first();
-        }else{
-            $employee = Employee::select('*')
+    public static function getByCpf($cpf, $idExcept = null){
+        $employee = Employee::select('*')
             ->where('emp_cpf', '=', $cpf)
-            ->where('emp_deleted', '=', false)->first();
-        }
+            ->where('emp_deleted', '=', false)
+            ->when($idExcept !== null, function ($query) use ($idExcept) {
+                $query->where('emp_id', '!=', $idExcept);
+            })
+        ->first();
         
         return $employee;
     }

@@ -12,7 +12,7 @@ use Carbon\Carbon;
 
 class EmployeeController extends Controller
 {
-    public function init(){
+    public function types(){
         cHelper::employeeNeedsSelectPlace();
 
         $types = EmployeeType::array();
