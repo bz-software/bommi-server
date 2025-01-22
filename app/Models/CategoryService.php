@@ -19,6 +19,11 @@ class CategoryService extends Model {
      */
     protected $table = 'categories_services';
 
+    protected $hidden = [
+        'case_deleted',
+        'case_place_id'
+    ]; 
+
     /**
      * The attributes that are mass assignable.
      *
@@ -28,10 +33,16 @@ class CategoryService extends Model {
         "case_name"
     ];
 
-    public static function rules():array {
-        return [
+    public static function rules($insert = true):array {
+        $rules = [
             'case_name' => 'required|max:300',
         ];
+
+        if(!$insert){
+            $rules['case_id'] = 'required';
+        }
+
+        return $rules;
     }
 
     public static function messages():array {
@@ -43,13 +54,16 @@ class CategoryService extends Model {
         ];
     }
 
-    public static function getByNameAndPlace($idPlace, $name){
+    public static function getByNameAndPlace($idPlace, $name, $idExcept = null){
         $name = strtolower($name);
 
         $data = CategoryService::select("*")
             ->whereRaw('LOWER(case_name) = ?', [$name])
             ->where('case_place_id', $idPlace)
             ->where('case_deleted', false)
+            ->when($idExcept !== null, function ($query) use ($idExcept) {
+                $query->where('case_id', '!=', $idExcept);
+            })
         ->first();
 
         return $data;

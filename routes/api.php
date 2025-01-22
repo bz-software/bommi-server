@@ -38,10 +38,13 @@ Route::get('/employee', [EmployeeController::class, 'read']);
 Route::post('/employee', [EmployeeController::class, 'create']);
 Route::put('/employee', [EmployeeController::class, 'update'])->middleware('auth:employee');
 Route::get('/employee', [EmployeeController::class, 'one']);
-Route::get('/employees/types', [EmployeeController::class, 'types']);
 //ADMIN
 Route::get('/admin/employees', [EmployeeController::class, 'list'])->middleware('auth:employee');
 Route::delete('/admin/employee/{id}', [EmployeeController::class, 'delete']);
+Route::get('/admin/employees/types', [EmployeeController::class, 'types']);
+
+
+// ============================================================================================================
 
 
 /**
@@ -58,5 +61,13 @@ Route::post('/admin/place/service/category', [CategoryServiceController::class, 
 Route::post('/admin/place/service', [ServicePlaceController::class, 'create'])->middleware('auth:employee');
 Route::delete('/admin/place/service/{id}', [ServicePlaceController::class, 'delete'])->middleware('auth:employee');
 Route::put('/admin/place/service', [ServicePlaceController::class, 'update'])->middleware('auth:employee');
+Route::put('/admin/place/service/category', [CategoryServiceController::class, 'update'])->middleware('auth:employee');
 
+
+// ============================================================================================================
+
+
+/**
+ * [DASHBOARD]
+ */
 Route::post('/dashboard/init', [DashboardController::class, 'init'])->middleware('auth:employee');

@@ -47,6 +47,45 @@ class CategoryServiceController extends Controller
         }
     }
 
+    public function update(Request $request){
+        cHelper::employeeNeedsSelectPlace();
+
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+
+        $data = $request->all();
+
+        $validator = Validator::make($data, CategoryService::rules(false));
+        if($validator->fails()){
+            return response()->json([
+                'errors' => cHelper::getAllFirstMessages($validator->errors()->toArray())
+            ], 400);
+        }
+
+        $duplicatedCategory = CategoryService::getByNameAndPlace($idPlace, $data['case_name'], $data['case_id']);
+        if(!empty($duplicatedCategory)){
+            $message['case_name'] = "Categoria já cadastrada";
+            return response()->json([
+                'errors' => $message
+            ], 400);
+        }
+
+        $category = CategoryService::getByIdAndPlace($data['case_id'], $idPlace);
+        if(empty($category)){
+            $message['case_name'] = "Categoria não pertence ao estabelecimento ou não existe";
+            return response()->json([
+                'errors' => $message
+            ], 400);
+        }
+
+        if($category->update($data)){
+            return response()->json($category);
+        }
+
+        return response()->json([
+            'errors' => "Erro inesperado"
+        ], 500);
+    }
+
     public function list(){
         cHelper::employeeNeedsSelectPlace();
         $idPlace = auth('employee')->user()->emp_place_id_logged;

@@ -42,13 +42,11 @@ class ServicePlace extends Model {
             'sepl_duration' => 'required'
         ];
 
-        if($insert){
-            return $rules;
-        }else{
+        if(!$insert){
             $rules['sepl_id'] = 'required';
+        }
 
-            return $rules;
-        } 
+        return $rules;
     }
 
     public static function messages():array {

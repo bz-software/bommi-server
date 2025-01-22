@@ -128,11 +128,14 @@ class ServicePlaceController extends Controller
             ], 400);
         }
 
-        $service->update($data);
 
-        if($service->save()){
+        if($service->update($data)){
             return response()->json($service);
         }
+
+        return response()->json([
+            'errors' => "Erro inesperado"
+        ], 500);
     }
 
     public function byCategory($idCategory){
