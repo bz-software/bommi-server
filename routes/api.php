@@ -62,7 +62,7 @@ Route::post('/admin/place/service', [ServicePlaceController::class, 'create'])->
 Route::delete('/admin/place/service/{id}', [ServicePlaceController::class, 'delete'])->middleware('auth:employee');
 Route::put('/admin/place/service', [ServicePlaceController::class, 'update'])->middleware('auth:employee');
 Route::put('/admin/place/service/category', [CategoryServiceController::class, 'update'])->middleware('auth:employee');
-
+Route::delete('/admin/place/service/category/{id}', [CategoryServiceController::class, 'delete'])->middleware('auth:employee');
 
 // ============================================================================================================
 
