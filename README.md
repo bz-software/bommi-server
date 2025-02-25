@@ -1,74 +1,66 @@
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+
 <p align="center">
-    <h1 align="center">bzs-salon (server-side)</h1>
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-Complete management system for salons. Access it on your cell phone and on your computer.
-bzs-salon is the ideal system for you to manage your entire salon routine in an easy and agile way,
-either on your computer or your smartphone, anytime, anywhere.
+## About Laravel
 
-DIRECTORY STRUCTURE
--------------------
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-      assets/             contains assets definition
-      commands/           contains console commands (controllers)
-      config/             contains application configurations
-      controllers/        contains Web controller classes
-      mail/               contains view files for e-mails
-      models/             contains model classes
-      runtime/            contains files generated during runtime
-      tests/              contains various tests for the basic application
-      vendor/             contains dependent 3rd-party packages
-      views/              contains view files for the Web application
-      web/                contains the entry script and Web resources
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-REQUIREMENTS
-------------
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-The minimum requirement by this project template that your Web server supports PHP 5.6.0.
+## Learning Laravel
 
-CONFIGURATION
--------------
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-### Routing url with xampp
-In ```C:\xampp\apache\conf\httpd.conf``` add the following:
-```
-Alias /bzs-salon-server "C:/xampp/htdocs/bzs-salon-server/web"
-<Directory "C:/xampp/htdocs/bzs-salon-server/web">
+You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-    # Usa mod_rewrite para suporte a URLs amigáveis
-    RewriteEngine on
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-    Require all granted
+## Laravel Sponsors
 
-    RewriteBase /bzs-salon-server/
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-    # Se $showName for "false" no UrlManager, impede o acesso a URLs que tenham o nome do  (index.php)
-    RewriteRule ^index.php/ - [L,R=404]
+### Premium Partners
 
-    # Se um arquivo ou diretório existe, usa a solicitação diretamente
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
+- **[Vehikl](https://vehikl.com/)**
+- **[Tighten Co.](https://tighten.co)**
+- **[WebReinvent](https://webreinvent.com/)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
+- **[Cyber-Duck](https://cyber-duck.co.uk)**
+- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+- **[Jump24](https://jump24.co.uk)**
+- **[Redberry](https://redberry.international/laravel/)**
+- **[Active Logic](https://activelogic.com)**
+- **[byte5](https://byte5.de)**
+- **[OP.GG](https://op.gg)**
 
-    # Caso contrário, redireciona para index.php
-    RewriteRule . index.php
+## Contributing
 
-</Directory>
-```
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-You can then access the application through the following URL:
+## Code of Conduct
 
-~~~
-http://localhost/bzs-salon-server/
-~~~
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-### Routing url with yii serve
-Run the following command (if you use xampp for other projects it is recommended that you use yii serve on a different port than xampp to avoid future problems):
+## Security Vulnerabilities
 
-```php yii serve --port=8012```
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-You can then access the application through the following URL:
-~~~
-http://localhost:8012/
-~~~
+## License
 
-
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

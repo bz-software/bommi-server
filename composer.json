@@ -1,73 +1,67 @@
 {
-    "name": "yiisoft/yii2-app-basic",
-    "description": "Yii 2 Basic Project Template",
-    "keywords": ["yii2", "framework", "basic", "project template"],
-    "homepage": "http://www.yiiframework.com/",
+    "name": "laravel/laravel",
     "type": "project",
-    "license": "BSD-3-Clause",
-    "support": {
-        "issues": "https://github.com/yiisoft/yii2/issues?state=open",
-        "forum": "http://www.yiiframework.com/forum/",
-        "wiki": "http://www.yiiframework.com/wiki/",
-        "irc": "irc://irc.freenode.net/yii",
-        "source": "https://github.com/yiisoft/yii2"
-    },
-    "minimum-stability": "stable",
+    "description": "The skeleton application for the Laravel framework.",
+    "keywords": ["laravel", "framework"],
+    "license": "MIT",
     "require": {
-        "php": ">=5.6.0",
-        "yiisoft/yii2": "~2.0.14",
-        "yiisoft/yii2-bootstrap": "~2.0.0",
-        "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
-        "vlucas/phpdotenv": "^5.3",
-        "symfony/dotenv": "^5.3"
+        "php": "^8.1",
+        "guzzlehttp/guzzle": "^7.2",
+        "laravel/framework": "^10.10",
+        "laravel/sanctum": "^3.3",
+        "laravel/tinker": "^2.8",
+        "tymon/jwt-auth": "^2.0"
     },
     "require-dev": {
-        "yiisoft/yii2-debug": "~2.1.0",
-        "yiisoft/yii2-gii": "~2.1.0",
-        "yiisoft/yii2-faker": "~2.0.0",
-        "codeception/codeception": "^4.0",
-        "codeception/verify": "~0.5.0 || ~1.1.0",
-        "codeception/specify": "~0.4.6",
-        "symfony/browser-kit": ">=2.7 <=4.2.4",
-        "codeception/module-filesystem": "^1.0.0",
-        "codeception/module-yii2": "^1.0.0",
-        "codeception/module-asserts": "^1.0.0"
+        "fakerphp/faker": "^1.9.1",
+        "laravel/pint": "^1.0",
+        "laravel/sail": "^1.18",
+        "mockery/mockery": "^1.4.4",
+        "nunomaduro/collision": "^7.0",
+        "phpunit/phpunit": "^10.1",
+        "spatie/laravel-ignition": "^2.0"
     },
-    "config": {
-        "process-timeout": 1800,
-        "fxp-asset": {
-            "enabled": false
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
         }
     },
     "scripts": {
-        "post-install-cmd": [
-            "yii\\composer\\Installer::postInstall"
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
-            "yii\\composer\\Installer::postCreateProject",
-            "yii\\composer\\Installer::postInstall"
+            "@php artisan key:generate --ansi"
         ]
     },
     "extra": {
-        "yii\\composer\\Installer::postCreateProject": {
-            "setPermission": [
-                {
-                    "runtime": "0777",
-                    "web/assets": "0777",
-                    "yii": "0755"
-                }
-            ]
-        },
-        "yii\\composer\\Installer::postInstall": {
-            "generateCookieValidationKey": [
-                "config/web.php"
-            ]
+        "laravel": {
+            "dont-discover": []
         }
     },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://asset-packagist.org"
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
         }
-    ]
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }
