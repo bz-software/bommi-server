@@ -8,54 +8,65 @@ use App\Http\Controllers\CategoryServiceController;
 use App\Http\Controllers\ServicePlaceController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/ping', fn() => ['pong' => true]);
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+*/
+
+Route::get('/ping', function(){
+    return ['pong' => true];
+});
+
 Route::get('/401', [AuthEmployeeController::class, 'unauthorized'])->name('login');
 
-// Authentication Routes
-Route::prefix('auth/employee')->group(function () {
-    Route::post('/login', [AuthEmployeeController::class, 'login']);
-    Route::post('/logout', [AuthEmployeeController::class, 'logout']);
-    Route::post('/refresh', [AuthEmployeeController::class, 'refresh']);
-    Route::post('/', [AuthEmployeeController::class, 'create']);
-});
+/**
+ * [EMPLOYEES]
+ */
+// AUTH
+Route::post('/auth/employee/login', [AuthEmployeeController::class, 'login']);
+Route::post('/auth/employee/logout', [AuthEmployeeController::class, 'logout']);
+Route::post('/auth/employee/refresh', [AuthEmployeeController::class, 'refresh']);
+Route::post('/auth/employee', [AuthEmployeeController::class, 'create']);
+//PUBLICS
+Route::get('/employee', [EmployeeController::class, 'one']);
+//ADMIN
+Route::post('/admin/employee', [EmployeeController::class, 'create'])->middleware('auth:employee');
+Route::put('/admin/employee', [EmployeeController::class, 'update'])->middleware('auth:employee');
+Route::get('/admin/employees', [EmployeeController::class, 'list'])->middleware('auth:employee');
+Route::delete('/admin/employee/{id}', [EmployeeController::class, 'delete'])->middleware('auth:employee');
+Route::get('/admin/employees/types', [EmployeeController::class, 'types'])->middleware('auth:employee');
 
-// Employee Routes
-Route::prefix('employee')->group(function () {
-    Route::get('/', [EmployeeController::class, 'read']);
-    Route::post('/', [EmployeeController::class, 'create']);
-    Route::get('/{id}', [EmployeeController::class, 'one']);
-    Route::middleware('auth:employee')->group(function () {
-        Route::put('/', [EmployeeController::class, 'update']);
-    });
-});
 
-// Admin Employee Routes
-Route::prefix('admin/employees')->middleware('auth:employee')->group(function () {
-    Route::get('/', [EmployeeController::class, 'list']);
-    Route::delete('/{id}', [EmployeeController::class, 'delete']);
-    Route::get('/types', [EmployeeController::class, 'types']);
-});
+// ============================================================================================================
 
-// Place Routes
-Route::prefix('place')->group(function () {
-    Route::get('/categories', [PlaceController::class, 'categories']);
-    Route::get('/services/categories', [CategoryServiceController::class, 'list']);
-    Route::get('/services/{id}', [ServicePlaceController::class, 'byCategory']);
-    Route::get('/service/{id}', [ServicePlaceController::class, 'one']);
-});
 
-// Admin Place Routes
-Route::prefix('admin/place')->middleware('auth:employee')->group(function () {
-    Route::post('/', [PlaceController::class, 'create']);
-    Route::post('/service/category', [CategoryServiceController::class, 'create']);
-    Route::post('/service', [ServicePlaceController::class, 'create']);
-    Route::put('/service', [ServicePlaceController::class, 'update']);
-    Route::put('/service/category', [CategoryServiceController::class, 'update']);
-    Route::delete('/service/{id}', [ServicePlaceController::class, 'delete']);
-    Route::delete('/service/category/{id}', [CategoryServiceController::class, 'delete']);
-});
+/**
+ * [PLACES]
+ */
+//PUBLICS
+Route::get('/place/categories', [PlaceController::class, 'categories']);
+Route::get('/place/services/categories', [CategoryServiceController::class, 'list']);
+Route::get('/place/services/{id}', [ServicePlaceController::class, 'byCategory']);
+Route::get('/place/service/{id}', [ServicePlaceController::class, 'one']);
+//ADMIN
+Route::post('/admin/place', [PlaceController::class, 'create'])->middleware('auth:employee');
+Route::post('/admin/place/service/category', [CategoryServiceController::class, 'create'])->middleware('auth:employee');
+Route::post('/admin/place/service', [ServicePlaceController::class, 'create'])->middleware('auth:employee');
+Route::delete('/admin/place/service/{id}', [ServicePlaceController::class, 'delete'])->middleware('auth:employee');
+Route::put('/admin/place/service', [ServicePlaceController::class, 'update'])->middleware('auth:employee');
+Route::put('/admin/place/service/category', [CategoryServiceController::class, 'update'])->middleware('auth:employee');
+Route::delete('/admin/place/service/category/{id}', [CategoryServiceController::class, 'delete'])->middleware('auth:employee');
 
-// Dashboard Routes
-Route::prefix('dashboard')->middleware('auth:employee')->group(function () {
-    Route::post('/init', [DashboardController::class, 'init']);
-});
+// ============================================================================================================
+
+
+/**
+ * [DASHBOARD]
+ */
+Route::post('/dashboard/init', [DashboardController::class, 'init'])->middleware('auth:employee');

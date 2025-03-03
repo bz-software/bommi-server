@@ -76,6 +76,8 @@ class EmployeeController extends Controller
             return response()->json(['errors' => $messages], 400);
         }
 
+        $employee['emp_cpf'] = preg_replace('/\D/', '', $employee['emp_cpf']);
+
         if(boolval($reuse)){
             $messageEmpty = 'Esse funcionário não existe';
             if(empty($employee['emp_id'])){
