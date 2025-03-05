@@ -21,6 +21,8 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
 
     protected $primaryKey = "emp_id";
 
+    protected $appends = ['emp_avatar_url'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -33,7 +35,8 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
         "emp_password",
         "emp_phone_number",
         "emp_birthdate",
-        "emp_cpf"
+        "emp_cpf",
+        "emp_avatar",
     ];
 
     protected $hidden = [
@@ -85,6 +88,11 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
                 'min' => "A senha deve conter no mínimo 6 caracteres"
             ]
         ];
+    }
+
+    public function getEmpAvatarUrlAttribute()
+    {
+        return asset("storage/employee_avatar/{$this->emp_avatar}");
     }
 
     public function getAuthPassword(){
