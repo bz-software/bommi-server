@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Symfony\Component\VarDumper\VarDumper;
 
 class ServicePlace extends Model {
@@ -105,5 +107,10 @@ class ServicePlace extends Model {
         ->first();
 
         return $data;
+    }
+
+    public function categoryService(): BelongsTo
+    {
+        return $this->belongsTo(CategoryService::class, 'sepl_case_id', 'case_id');
     }
 }

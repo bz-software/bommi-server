@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\CategoryServiceController;
+use App\Http\Controllers\EmployeeServiceController;
 use App\Http\Controllers\ServicePlaceController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +42,10 @@ Route::put('/admin/employee', [EmployeeController::class, 'update'])->middleware
 Route::get('/admin/employees', [EmployeeController::class, 'list'])->middleware('auth:employee');
 Route::delete('/admin/employee/{id}', [EmployeeController::class, 'delete'])->middleware('auth:employee');
 Route::get('/admin/employees/types', [EmployeeController::class, 'types'])->middleware('auth:employee');
+// EMPLOYEE SERVICES
+Route::post('/admin/employee/service', [EmployeeServiceController::class, 'create'])->middleware('auth:employee');
+Route::get('/admin/employee/services', [EmployeeServiceController::class, 'list'])->middleware('auth:employee');
+Route::delete('/admin/employee/service/{id}', [EmployeeServiceController::class, 'delete'])->middleware('auth:employee');
 
 
 // ============================================================================================================

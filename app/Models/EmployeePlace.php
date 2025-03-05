@@ -4,7 +4,18 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * App\Models\EmployeePlace
+ * 
+ * @property int $ep_id
+ * @property int $ep_place_id
+ * @property int $ep_employee_id
+ * @property int $ep_deleted
+ * @property string $ep_deleted_at
+ * @property int $ep_employee_type
+ */
 class EmployeePlace extends Model {
 
     protected $primaryKey = "ep_id";
@@ -63,13 +74,6 @@ class EmployeePlace extends Model {
         $idOwner = auth('employee')->user()->emp_id;
         $idPlace = auth('employee')->user()->emp_place_id_logged;
 
-        // SELECT ep.* FROM employees_place ep
-        // INNER JOIN places p ON p.pla_id = ep.ep_place_id
-        // INNER JOIN employees owner ON owner.emp_id = p.pla_employee_id
-        // WHERE p.pla_id = 7
-        // AND owner.emp_id = 65
-        // AND ep.ep_employee_id = 66;
-
         $employeePlace = EmployeePlace::select('employees_place.*')
             ->join('places as p', 'p.pla_id', '=', 'employees_place.ep_place_id')
             ->join('employees as owner', 'owner.emp_id', '=', 'p.pla_employee_id')
@@ -86,5 +90,10 @@ class EmployeePlace extends Model {
         }
 
         return false;
+    }
+
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'ep_employee_id', 'emp_id');
     }
 }
