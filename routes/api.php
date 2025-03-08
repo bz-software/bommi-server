@@ -5,7 +5,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\CategoryServiceController;
+use App\Http\Controllers\EmployeeServiceController;
 use App\Http\Controllers\ServicePlaceController;
+use App\Models\EmployeePlace;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,14 +36,19 @@ Route::post('/auth/employee/logout', [AuthEmployeeController::class, 'logout']);
 Route::post('/auth/employee/refresh', [AuthEmployeeController::class, 'refresh']);
 Route::post('/auth/employee', [AuthEmployeeController::class, 'create']);
 //PUBLICS
-Route::get('/employee', [EmployeeController::class, 'read']);
-Route::post('/employee', [EmployeeController::class, 'create']);
-Route::put('/employee', [EmployeeController::class, 'update'])->middleware('auth:employee');
 Route::get('/employee', [EmployeeController::class, 'one']);
 //ADMIN
+Route::put('/admin/employee', [EmployeeController::class, 'update'])->middleware('auth:employee');
+Route::put('/admin/employee/attendance', [EmployeeController::class, 'updateAttendance'])->middleware('auth:employee');
+Route::get('/admin/employee/attendance', [EmployeeController::class, 'listAttendance'])->middleware('auth:employee');
+Route::post('/admin/employee', [EmployeeController::class, 'create'])->middleware('auth:employee');
 Route::get('/admin/employees', [EmployeeController::class, 'list'])->middleware('auth:employee');
-Route::delete('/admin/employee/{id}', [EmployeeController::class, 'delete']);
-Route::get('/admin/employees/types', [EmployeeController::class, 'types']);
+Route::delete('/admin/employee/{id}', [EmployeeController::class, 'delete'])->middleware('auth:employee');
+Route::get('/admin/employees/types', [EmployeeController::class, 'types'])->middleware('auth:employee');
+// EMPLOYEE SERVICES
+Route::post('/admin/employee/service', [EmployeeServiceController::class, 'create'])->middleware('auth:employee');
+Route::get('/admin/employee/services', [EmployeeServiceController::class, 'list'])->middleware('auth:employee');
+Route::delete('/admin/employee/service/{id}', [EmployeeServiceController::class, 'delete'])->middleware('auth:employee');
 
 
 // ============================================================================================================

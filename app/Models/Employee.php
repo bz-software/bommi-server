@@ -21,6 +21,8 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
 
     protected $primaryKey = "emp_id";
 
+    protected $appends = ['emp_avatar_url'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -33,7 +35,8 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
         "emp_password",
         "emp_phone_number",
         "emp_birthdate",
-        "emp_cpf"
+        "emp_cpf",
+        "emp_avatar",
     ];
 
     protected $hidden = [
@@ -42,15 +45,23 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
     ]; 
 
 
-    public static function rules():array {
-        return [
+    public static function rules($insert = true, $idExcept = null):array {
+        $rules = [
             'emp_first_name' => 'required|max:100',
             'emp_last_name' => 'max:100',
             'emp_cpf' => 'required|cpf|size:11|unique:employees,emp_cpf,NULL,emp_id,emp_deleted,0',
             'emp_birthdate' => 'required|date|before_or_equal:'.now()->subYears(18)->format('Y-m-d'),
             'emp_email' => 'required|email|unique:employees,emp_email,NULL,emp_id,emp_deleted,0',
-            'emp_password' => 'required|min:6',
+            'emp_password' => 'required|min:6'            
         ];
+
+        if(!$insert){
+            $rules['emp_cpf'] = 'required|cpf|size:11|unique:employees,emp_cpf,' . $idExcept . ',emp_id,emp_deleted,0';
+            unset($rules['emp_password']);
+            unset($rules['emp_email']);
+        }
+
+        return $rules;
     }
 
     public static function messages():array {
@@ -83,8 +94,24 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
             'emp_password' => [
                 'required' => "Campo obrigatório",
                 'min' => "A senha deve conter no mínimo 6 caracteres"
+            ],
+
+            'avatar' => [
+                'image' => 'O arquivo deve ser uma imagem.',
+                'mimes' => 'A imagem deve ser nos formatos JPEG, PNG ou JPG.',
+                'dimensions' => 'A imagem deve ter pelo menos 100px de largura e 100px de altura.',
+                'max' => 'A imagem não pode exceder 2MB.',
             ]
         ];
+    }
+
+    public function getEmpAvatarUrlAttribute()
+    {
+        return asset("storage/employee_avatar/{$this->emp_avatar}");
+    }
+
+    public function setCpfAttribute($value) {
+        $this->attributes['emp_cpf'] = preg_replace('/\D/', '', $value);
     }
 
     public function getAuthPassword(){

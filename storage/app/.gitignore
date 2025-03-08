@@ -1,3 +1,6 @@
-*
-!public/
+public/employee_avatar/*
+
+!public/employee_avatar/default.jpg
 !.gitignore
+
+

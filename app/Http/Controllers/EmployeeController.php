@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use App\Validators\AvatarValidator;
 
 class EmployeeController extends Controller
 {
@@ -76,6 +77,8 @@ class EmployeeController extends Controller
             return response()->json(['errors' => $messages], 400);
         }
 
+        $employee['emp_cpf'] = preg_replace('/\D/', '', $employee['emp_cpf']);
+
         if(boolval($reuse)){
             $messageEmpty = 'Esse funcionário não existe';
             if(empty($employee['emp_id'])){
@@ -118,6 +121,90 @@ class EmployeeController extends Controller
 
             return response()->json(['employee' => Employee::getById($employeeSave->emp_id, $idPlace)], 200);
         }
+    }
+
+    public function update(Request $request){
+        cHelper::employeeNeedsSelectPlace();        
+
+        $data = $request->except('avatar');
+        $avatar = $request->file('avatar');
+
+        $id = auth('employee')->user()->emp_id;
+
+        $data['emp_cpf'] = !empty($data['emp_cpf']) ? preg_replace('/\D/', '', $data['emp_cpf']) : null;
+
+        $validator = Validator::make($data, Employee::rules(false, $id), Employee::messages());
+        $avatarValidator = AvatarValidator::validate($request->all());
+        if($validator->fails() || $avatarValidator->fails()){
+            $messages = cHelper::getAllFirstMessages($validator->errors()->toArray());
+            $avatarMessages = cHelper::getAllFirstMessages($avatarValidator->errors()->toArray());
+            
+            return response()->json([
+                'errors' => array_merge($messages, $avatarMessages)
+            ], 400);
+        }
+
+        $employee = Employee::getById($id);
+        $employee->emp_first_name = $data['emp_first_name'];
+        $employee->emp_last_name = $data['emp_last_name'];
+        $employee->emp_cpf = $data['emp_cpf'];
+        $employee->emp_birthdate = Carbon::parse($data['emp_birthdate'])->translatedFormat('Y-m-d');
+
+        // TODO: ver outra forma de buscar o tipo de usuário
+        unset($employee->emp_type_name);
+
+         // Se o arquivo de imagem foi enviado
+        if ($request->hasFile('avatar')) {
+            $avatarName = $id . '_' . rand(0, 9999) . '.' . $avatar->getClientOriginalExtension();
+            $avatar->storeAs('public/employee_avatar', $avatarName);
+            $employee->emp_avatar = $avatarName;
+        }
+
+        $employee->update();
+
+        return response()->json(['employee' => $employee]);
+    }
+
+    public function updateAttendance(Request $request){
+        cHelper::employeeNeedsSelectPlace();
+
+        $data = $request->all();
+
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+        $idEmployee = auth('employee')->user()->emp_id;
+
+        $employeePlace = EmployeePlace::get($idEmployee, $idPlace);
+        abort_if(empty($employeePlace), 404);
+
+        $validator = Validator::make($request->all(), EmployeePlace::rules(), EmployeePlace::messages());
+        if($validator->fails()){
+            $messages = cHelper::getAllFirstMessages($validator->errors()->toArray());
+            
+            return response()->json([
+                'errors' => $messages
+            ], 400);
+        }
+
+        $employeePlace->ep_clock_in = $data['ep_clock_in'];
+        $employeePlace->ep_clock_out = $data['ep_clock_out'];
+        
+        if($employeePlace->update()){
+            return response('', 200);
+        }else{
+            abort(500);
+        }
+    }
+
+    public function listAttendance(){
+        cHelper::employeeNeedsSelectPlace();
+
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+        $idEmployee = auth('employee')->user()->emp_id;
+
+        $employeePlace = EmployeePlace::get($idEmployee, $idPlace);
+        abort_if(empty($employeePlace), 404);
+
+        return response()->json($employeePlace);
     }
 
     public function list(){
