@@ -41,6 +41,39 @@ class EmployeePlace extends Model {
         "ep_deleted"
     ];
 
+    public static function rules(){
+        return [
+            'ep_clock_in' => [
+                'nullable',
+                'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/',
+                function ($attribute, $value, $fail) {
+                    if (request('ep_clock_out') && $value > request('ep_clock_out')) {
+                        $fail('O horário de entrada não pode ser maior que o de saída.');
+                    }
+                },
+            ],
+            'ep_clock_out' => [
+                'nullable',
+                'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/',
+                function ($attribute, $value, $fail) {
+                    if (request('ep_clock_in') && $value < request('ep_clock_in')) {
+                        $fail('O horário de saída não pode ser menor que o de entrada.');
+                    }
+                },
+            ],
+        ];
+    }
+
+    public static function messages() {
+        return [
+            'ep_clock_in.required' => 'O horário de entrada é obrigatório.',
+            'ep_clock_in.regex' => 'O horário de entrada deve estar no formato HH:MM.',
+
+            'ep_clock_out.required' => 'O horário de saída é obrigatório.',
+            'ep_clock_out.regex' => 'O horário de saída deve estar no formato HH:MM.',
+        ];
+    }
+
 
     public static function get($idEmployee, $idPlace){
         $employeePlace = EmployeePlace::select('*')

@@ -124,6 +124,8 @@ class EmployeeController extends Controller
     }
 
     public function update(Request $request){
+        cHelper::employeeNeedsSelectPlace();        
+
         $data = $request->except('avatar');
         $avatar = $request->file('avatar');
 
@@ -161,6 +163,48 @@ class EmployeeController extends Controller
         $employee->update();
 
         return response()->json(['employee' => $employee]);
+    }
+
+    public function updateAttendance(Request $request){
+        cHelper::employeeNeedsSelectPlace();
+
+        $data = $request->all();
+
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+        $idEmployee = auth('employee')->user()->emp_id;
+
+        $employeePlace = EmployeePlace::get($idEmployee, $idPlace);
+        abort_if(empty($employeePlace), 404);
+
+        $validator = Validator::make($request->all(), EmployeePlace::rules(), EmployeePlace::messages());
+        if($validator->fails()){
+            $messages = cHelper::getAllFirstMessages($validator->errors()->toArray());
+            
+            return response()->json([
+                'errors' => $messages
+            ], 400);
+        }
+
+        $employeePlace->ep_clock_in = $data['ep_clock_in'];
+        $employeePlace->ep_clock_out = $data['ep_clock_out'];
+        
+        if($employeePlace->update()){
+            return response('', 200);
+        }else{
+            abort(500);
+        }
+    }
+
+    public function listAttendance(){
+        cHelper::employeeNeedsSelectPlace();
+
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+        $idEmployee = auth('employee')->user()->emp_id;
+
+        $employeePlace = EmployeePlace::get($idEmployee, $idPlace);
+        abort_if(empty($employeePlace), 404);
+
+        return response()->json($employeePlace);
     }
 
     public function list(){

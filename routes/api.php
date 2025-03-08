@@ -7,6 +7,7 @@ use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\CategoryServiceController;
 use App\Http\Controllers\EmployeeServiceController;
 use App\Http\Controllers\ServicePlaceController;
+use App\Models\EmployeePlace;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,6 +39,8 @@ Route::post('/auth/employee', [AuthEmployeeController::class, 'create']);
 Route::get('/employee', [EmployeeController::class, 'one']);
 //ADMIN
 Route::put('/admin/employee', [EmployeeController::class, 'update'])->middleware('auth:employee');
+Route::put('/admin/employee/attendance', [EmployeeController::class, 'updateAttendance'])->middleware('auth:employee');
+Route::get('/admin/employee/attendance', [EmployeeController::class, 'listAttendance'])->middleware('auth:employee');
 Route::post('/admin/employee', [EmployeeController::class, 'create'])->middleware('auth:employee');
 Route::get('/admin/employees', [EmployeeController::class, 'list'])->middleware('auth:employee');
 Route::delete('/admin/employee/{id}', [EmployeeController::class, 'delete'])->middleware('auth:employee');
