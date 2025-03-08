@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 use App\Enums\EmployeeType;
 use App\Helpers\ControllerHelper as cHelper;
+use App\Http\Requests\StoreCategoryServiceRequest;
 use App\Models\CategoryService;
 use App\Models\Employee;
 use App\Models\EmployeePlace;
+use App\Repositories\CategoryServiceRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
@@ -18,34 +20,38 @@ class CategoryServiceController extends Controller
         cHelper::employeeNeedsSelectPlace();
     }
 
-    public function create(Request $request){
-        cHelper::employeeNeedsSelectPlace();
-        $idPlace = auth('employee')->user()->emp_place_id_logged;
-
-        $data = $request->all();
-
-        $validator = Validator::make($data, CategoryService::rules());
-        if($validator->fails()){
-            return response()->json([
-                'errors' => cHelper::getAllFirstMessages($validator->errors()->toArray())
-            ], 400);
-        }
-
-        $categoryFounded = CategoryService::getByNameAndPlace($idPlace, $data['case_name']);
-        if(!empty($categoryFounded)){
-            $message['case_name'] = "Categoria já cadastrada";
-            return response()->json([
-                'errors' => $message
-            ], 400);
-        }
-
-        $category = new CategoryService($data);
-        $category->case_place_id = $idPlace;
-
-        if($category->save()){
-            return response()->json($category);
-        }
+    public function create(StoreCategoryServiceRequest $request){
+        return response()->json($request->all());
     }
+
+    // public function create(Request $request){
+    //     cHelper::employeeNeedsSelectPlace();
+    //     $idPlace = auth('employee')->user()->emp_place_id_logged;
+
+    //     $data = $request->all();
+
+    //     $validator = Validator::make($data, CategoryService::rules());
+    //     if($validator->fails()){
+    //         return response()->json([
+    //             'errors' => cHelper::getAllFirstMessages($validator->errors()->toArray())
+    //         ], 400);
+    //     }
+
+    //     $categoryFounded = CategoryService::getByNameAndPlace($idPlace, $data['case_name']);
+    //     if(!empty($categoryFounded)){
+    //         $message['case_name'] = "Categoria já cadastrada";
+    //         return response()->json([
+    //             'errors' => $message
+    //         ], 400);
+    //     }
+
+    //     $category = new CategoryService($data);
+    //     $category->case_place_id = $idPlace;
+
+    //     if($category->save()){
+    //         return response()->json($category);
+    //     }
+    // }
 
     public function update(Request $request){
         cHelper::employeeNeedsSelectPlace();

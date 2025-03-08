@@ -53,41 +53,4 @@ class CategoryService extends Model {
             ]
         ];
     }
-
-    public static function getByNameAndPlace($idPlace, $name, $idExcept = null){
-        $name = strtolower($name);
-
-        $data = CategoryService::select("*")
-            ->whereRaw('LOWER(case_name) = ?', [$name])
-            ->where('case_place_id', $idPlace)
-            ->where('case_deleted', false)
-            ->when($idExcept !== null, function ($query) use ($idExcept) {
-                $query->where('case_id', '!=', $idExcept);
-            })
-        ->first();
-
-        return $data;
-    }
-
-    public static function getByPlace($idPlace){
-        return CategoryService::select("*")
-            ->where('case_place_id', '=', $idPlace)
-            ->where('case_deleted', '=', false)
-        ->get();
-    }
-
-    public static function getById($id){
-        return CategoryService::select("*")
-            ->where('case_id', '=', $id)
-            ->where('case_deleted', '=', false)
-        ->get();
-    }
-
-    public static function getByIdAndPlace($id, $idPlace){
-        return CategoryService::select("*")
-            ->where('case_id', '=', $id)
-            ->where('case_place_id', $idPlace)
-            ->where('case_deleted', '=', false)
-        ->first();
-    }
 }
