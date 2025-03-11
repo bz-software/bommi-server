@@ -6,10 +6,10 @@ use Illuminate\Http\Request;
 
 class CategoryServiceDTO
 {
-    public int $id;
-    public string $name;
-    public bool $deleted;
-    public int $idPlace;
+    public $case_id;
+    public $case_name;
+    public $case_deleted;
+    public $case_place_id;
 
     /**
      * CategoryServiceDTO constructor.
@@ -19,12 +19,12 @@ class CategoryServiceDTO
      * @param bool $deleted
      * @param int $idPlace
      */
-    public function __construct(int $id, string $name, bool $deleted, int $idPlace)
+    public function __construct($id, $name, $deleted, $idPlace)
     {
-        $this->id = $id;
-        $this->name = $name;
-        $this->deleted = $deleted;
-        $this->idPlace = $idPlace;
+        $this->case_id = $id;
+        $this->case_name = $name;
+        $this->case_deleted = $deleted;
+        $this->case_place_id = $idPlace;
     }
 
     /**
@@ -52,35 +52,20 @@ class CategoryServiceDTO
     public static function fromRequest(Request $request): self
     {
         return new self(
-            $request->input('id'),
-            $request->input('name'),
-            $request->input('deleted'),
-            $request->input('idPlace')
+            $request->input('id') ?? null,
+            $request->input('name') ?? null,
+            $request->input('deleted') ?? null,
+            $request->input('idPlace') ?? null
         );
     }
 
-    /**
-     * Método para converter o DTO em um array.
-     * 
-     * @return array
-     */
-    public function toArray(): array
+    public function toModel(): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'deleted' => $this->deleted,
-            'idPlace' => $this->idPlace,
+            'case_id' => $this->case_id,
+            'case_name' => $this->case_name,
+            'case_deleted' => $this->case_deleted,
+            'case_place_id' => $this->case_place_id,
         ];
     }
-
-    // public function toModel(): array
-    // {
-    //     return [
-    //         'case_id' => $this->id,
-    //         'case_name' => $this->name,
-    //         'case_deleted' => $this->deleted,
-    //         'case_place_id' => $this->idPlace,
-    //     ];
-    // }
 }

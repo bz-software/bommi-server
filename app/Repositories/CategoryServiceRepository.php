@@ -10,14 +10,28 @@ class CategoryServiceRepository
 
     public function store(CategoryServiceDTO $dto)
     {
-        $category = new $this->model($dto);
+        $data = $dto->toModel();
+
+        $category = new $this->model($data);
 
         $category->save();
 
         return $category;
     }
 
-    public static function getByNameAndPlace($idPlace, $name, $idExcept = null){
+    public function update(CategoryServiceDTO $dto)
+    {
+        $data = $dto->toModel();
+        
+        $category = $this->model->find($dto->case_id);
+        $category->fill($data);
+
+        $category->save();
+
+        return $category;
+    }
+
+    public function getByNameAndPlace($idPlace, $name, $idExcept = null){
         $name = strtolower($name);
 
         $data = CategoryServiceModel::select("*")
@@ -32,21 +46,21 @@ class CategoryServiceRepository
         return $data;
     }
 
-    public static function getByPlace($idPlace){
+    public function getByPlace($idPlace){
         return CategoryServiceModel::select("*")
             ->where('case_place_id', '=', $idPlace)
             ->where('case_deleted', '=', false)
         ->get();
     }
 
-    public static function getById($id){
+    public function getById($id){
         return CategoryServiceModel::select("*")
             ->where('case_id', '=', $id)
             ->where('case_deleted', '=', false)
         ->get();
     }
 
-    public static function getByIdAndPlace($id, $idPlace){
+    public function getByIdAndPlace($id, $idPlace){
         return CategoryServiceModel::select("*")
             ->where('case_id', '=', $id)
             ->where('case_place_id', $idPlace)

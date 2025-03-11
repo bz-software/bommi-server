@@ -30,7 +30,8 @@ class CategoryService extends Model {
      * @var array<int, string>
      */
     protected $fillable = [
-        "case_name"
+        "case_name",
+        "case_place_id"
     ];
 
     public static function rules($insert = true):array {

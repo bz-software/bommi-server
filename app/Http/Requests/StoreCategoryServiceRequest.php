@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\AbstractFormRequest;
 
@@ -16,16 +17,21 @@ class StoreCategoryServiceRequest extends AbstractFormRequest
 
     public function rules(): array
     {
+        $id = $this->input('category');
+
         return [
-            'case_name' => 'required|max:300'
+            'name' => 'required|max:300'
         ];
     }
 
     public function messages():array {
+        
+
         return [
-            'case_name' => [
+            'name' => [
                 'required' => self::REQUIRED_MSG,
-                'max' => 'O nome deve conter no máximo 300 caracteres'
+                'max' => 'O nome deve conter no máximo 300 caracteres',
+                'unique' => 'Já existe uma categoria com este nome'
             ]
         ];
     }
