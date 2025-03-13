@@ -14,9 +14,13 @@ class CategoryServiceRepository
 
         $category = new $this->model($data);
 
-        $category->save();
-
-        return $category;
+        if(!$category->save()){
+            abort(500);
+        }
+        
+        $dto->case_id = $category->case_id;
+        
+        return $dto;
     }
 
     public function update(CategoryServiceDTO $dto)
@@ -26,9 +30,11 @@ class CategoryServiceRepository
         $category = $this->model->find($dto->case_id);
         $category->fill($data);
 
-        $category->save();
+        if(!$category->save()){
+            abort(500);
+        }
 
-        return $category;
+        return $dto->fromArray($category->toArray());
     }
 
     public function getByNameAndPlace($idPlace, $name, $idExcept = null){

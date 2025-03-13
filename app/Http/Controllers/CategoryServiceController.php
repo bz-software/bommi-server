@@ -30,11 +30,7 @@ class CategoryServiceController extends Controller
 
     public function list(){
         cHelper::employeeNeedsSelectPlace();
-        $idPlace = auth('employee')->user()->emp_place_id_logged;
-
-
-        $categories = CategoryService::getByPlace($idPlace);
-        return response()->json(['categories' => $categories], 200);
+        return $this->service->list();
     }
 
     public function delete($id){

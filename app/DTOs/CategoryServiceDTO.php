@@ -36,10 +36,10 @@ class CategoryServiceDTO
     public static function fromArray(array $data): self
     {
         return new self(
-            $data['case_id'],
-            $data['case_name'],
-            $data['case_deleted'],
-            $data['case_place_id']
+            $data['case_id'] ?? null,
+            $data['case_name'] ?? null,
+            $data['case_deleted'] ?? null,
+            $data['case_place_id'] ?? null
         );
     }
 
@@ -67,5 +67,15 @@ class CategoryServiceDTO
             'case_deleted' => $this->case_deleted,
             'case_place_id' => $this->case_place_id,
         ];
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->case_id,
+            'name' => $this->case_name,
+            'deleted' => $this->case_deleted,
+            'idPlace' => $this->case_place_id,
+        ]; 
     }
 }

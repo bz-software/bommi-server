@@ -18,9 +18,9 @@ class CategoryServiceService {
             ], 400);
         }
 
-        if($this->repository->store($dto)){
-            return response()->json($dto->toArray());
-        }
+        $dto = $this->repository->store($dto);
+
+        return response()->json($dto->toArray());
     }
 
     public function update(CategoryServiceDTO $dto){
@@ -40,13 +40,22 @@ class CategoryServiceService {
             ], 400);
         }
 
-        if($this->repository->update($dto)){
-            return response()->json($dto);
+        $dto = $this->repository->update($dto);
+
+        return response()->json($dto->toArray());
+    }
+
+    public function list(){
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+        $categories = $this->repository->getByPlace($idPlace);
+
+        $dtos = collect();
+
+        if ($categories->isNotEmpty()) {
+            $dtos = $categories->map(fn($category) => CategoryServiceDTO::fromArray($category->toArray()));
         }
 
-        return response()->json([
-            'errors' => "Erro inesperado"
-        ], 500);
+        return response()->json(['categories' => $dtos->map(fn($dto) => $dto->toArray())], 200);
     }
 
     public function exists($idPlace, $name, $idExcept = null)
