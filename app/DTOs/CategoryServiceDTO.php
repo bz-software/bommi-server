@@ -4,7 +4,7 @@ namespace App\DTOs;
 
 use Illuminate\Http\Request;
 
-class CategoryServiceDTO
+class CategoryServiceDTO extends AbstractDTO
 {
     public $case_id;
     public $case_name;
@@ -67,15 +67,5 @@ class CategoryServiceDTO
             'case_deleted' => $this->case_deleted,
             'case_place_id' => $this->case_place_id,
         ];
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->case_id,
-            'name' => $this->case_name,
-            'deleted' => $this->case_deleted,
-            'idPlace' => $this->case_place_id,
-        ]; 
     }
 }
