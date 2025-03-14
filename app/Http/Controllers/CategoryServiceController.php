@@ -35,30 +35,6 @@ class CategoryServiceController extends Controller
 
     public function delete($id){
         cHelper::employeeNeedsSelectPlace();
-        
-        $idPlace = auth('employee')->user()->emp_place_id_logged;
-        $id = intval($id);
-
-        if(empty($id)){
-            return response()->json([
-                'errors' => ['case_id' => 'Campo obrigatório']
-            ], 400);
-        }
-
-        $category = CategoryService::getByIdAndPlace($id, $idPlace);
-        if(empty($category)){
-            return response()->json([
-                'errors' => ['case_id' => 'Categoria não pertence ao estabelecimento em uso']
-            ], 400);
-        }
-
-        $category->case_deleted = true;
-        $success = $category->save();
-
-        if($success){
-            return response()->json([], 200);
-        }else{
-            return response()->json([], 500);
-        }
+        return $this->service->delete($id);
     }
 }

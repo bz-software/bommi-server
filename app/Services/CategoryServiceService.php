@@ -58,6 +58,33 @@ class CategoryServiceService {
         return response()->json(['categories' => $dtos->map(fn($dto) => $dto->toArray())], 200);
     }
 
+    public function delete($id){
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+        $id = intval($id);
+
+        if(empty($id)){
+            return response()->json([
+                'errors' => ['case_id' => 'Campo obrigatório']
+            ], 400);
+        }
+
+        $category = $this->repository->getByIdAndPlace($id, $idPlace);
+        if(empty($category)){
+            return response()->json([
+                'errors' => ['case_id' => 'Categoria não pertence ao estabelecimento em uso']
+            ], 400);
+        }
+
+        $category->case_deleted = true;
+        $success = $category->save();
+
+        if($success){
+            return response()->json([], 200);
+        }
+        
+        abort(500);
+    }
+
     public function exists($idPlace, $name, $idExcept = null)
     {
         $category = $this->repository->getByNameAndPlace($idPlace, $name, $idExcept);
