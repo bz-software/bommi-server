@@ -47,17 +47,6 @@ class ServicePlaceController extends Controller
 
     public function byCategory($idCategory){
         cHelper::employeeNeedsSelectPlace();
-        $category = CategoryService::getById($idCategory);
-
-        if(empty($category)){
-            $message['errors']['sepl_case_id'] = "Categoria inválida";
-            return response()->json([
-                'errors' => $message
-            ], 400);
-        }
-
-        $services = ServicePlace::getAllByCategory($idCategory);
-    
-        return response()->json(['services' => $services], 200);
+        return $this->service->byCategory($idCategory);
     }
 }

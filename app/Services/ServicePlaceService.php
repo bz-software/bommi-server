@@ -69,5 +69,23 @@ class ServicePlaceService {
         $dto = $this->repository->update($dto);
         return response()->json($dto->toArray());
     }
+
+    public function byCategory($idCategory){
+        $category = $this->categoryRepository->getById($idCategory);
+
+        if(empty($category)){
+            $message['errors']['sepl_case_id'] = "Categoria inválida";
+            return response()->json([ 'errors' => $message ], 400);
+        }
+
+        $services = $this->repository->getAllByCategory($idCategory);
+
+        $dtos = collect();
+        if ($services->isNotEmpty()) {
+            $dtos = $services->map(fn($service) => ServicePlaceDTO::fromArray($service->toArray()));
+        }
+
+        return response()->json(['services' => $dtos->map(fn($dto) => $dto->toArray())], 200);
+    }
 }
 
