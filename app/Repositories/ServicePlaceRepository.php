@@ -54,10 +54,29 @@ class ServicePlaceRepository
     }
 
     public function delete($id){
-        $model = $this->getById($id);
+        $service = $this->getById($id);
 
-        $model->sepl_deleted = true;
-        return $model->save();
+        $service->sepl_deleted = true;
+
+        if(!$service->save()){
+            abort(500);
+        }
+
+        return true;
+    }
+
+    public function update(ServicePlaceDTO $dto){
+        $service = $this->model->find($dto->sepl_id);
+        $service->sepl_name = $dto->sepl_name;
+        $service->sepl_description = $dto->sepl_description;
+        $service->sepl_price = $dto->sepl_price;
+        $service->sepl_duration = $dto->sepl_duration;
+
+        if(!$service->save()){
+            abort(500);
+        }
+
+        return $dto->fromArray($service->toArray());
     }
 }
 

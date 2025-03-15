@@ -16,6 +16,7 @@ class ServicePlaceRequest extends AbstractFormRequest
     public function rules(): array
     {
         return [
+            'id' => $this->isMethod('put') ? 'required' : 'nullable',
             'name' => 'required|max:200',
             'description' => 'max:400',
             'idCategory' => 'required',
@@ -32,7 +33,7 @@ class ServicePlaceRequest extends AbstractFormRequest
 
     public function messages():array {
         return [
-            'sepl_id' => [
+            'id' => [
                 'required' => self::REQUIRED_MSG,
             ],
 

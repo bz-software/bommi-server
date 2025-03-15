@@ -40,43 +40,9 @@ class ServicePlaceController extends Controller
     /**
      * TODO: validate whether the updated service name already exists in another service
      */
-    public function update(Request $request){
+    public function update(ServicePlaceRequest $request){
         cHelper::employeeNeedsSelectPlace();
-
-        $idPlace = auth('employee')->user()->emp_place_id_logged;
-
-        $data = $request->all();
-
-        $validator = Validator::make($data, ServicePlace::rules(false), ServicePlace::messages());
-        if($validator->fails()){
-            return response()->json([
-                'errors' => cHelper::getAllFirstMessages($validator->errors()->toArray())
-            ], 400);
-        }
-
-        if(empty(CategoryService::getByIdAndPlace($data['sepl_case_id'], $idPlace))){
-            $message['sepl_name'] = "Categoria não pertence ao estabelecimento em uso";
-            return response()->json([
-                'errors' => $message
-            ], 400);
-        }
-
-        $service = ServicePlace::getById($data['sepl_id']);
-        if(empty($service)){
-            $message['sepl_name'] = "Serviço não encontrado";
-            return response()->json([
-                'errors' => $message
-            ], 400);
-        }
-
-
-        if($service->update($data)){
-            return response()->json($service);
-        }
-
-        return response()->json([
-            'errors' => "Erro inesperado"
-        ], 500);
+        return $this->service->update(ServicePlaceDTO::fromRequest($request));
     }
 
     public function byCategory($idCategory){

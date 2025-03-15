@@ -48,11 +48,26 @@ class ServicePlaceService {
             return response()->json([ 'errors' => ['sepl_id' => 'Serviço não pertence à categoria do estabelecimento em uso'] ], 400);
         }
 
-        abort(500);
-        if($this->repository->delete($id)){
-            return response()->json([], 200);
-        }else{
+        $this->repository->delete($id);
+        return response('');
+    }
+
+    public function update(ServicePlaceDTO $dto){
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+
+        if(empty($this->categoryRepository->getByIdAndPlace($dto->sepl_case_id, $idPlace))){
+            $message['sepl_name'] = "Categoria não pertence ao estabelecimento em uso";
+            return response()->json( [ 'errors' => $message ], 400);
         }
+
+        $service = $this->repository->getById($dto->sepl_id);
+        if(empty($service)){
+            $message['sepl_name'] = "Serviço não encontrado";
+            return response()->json([ 'errors' => $message ], 400);
+        }
+
+        $dto = $this->repository->update($dto);
+        return response()->json($dto->toArray());
     }
 }
 

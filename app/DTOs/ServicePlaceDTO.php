@@ -19,8 +19,11 @@ class ServicePlaceDTO extends AbstractDTO
      * 
      * @param int $id
      * @param string $name
+     * @param string $description
+     * @param int $idCategory
      * @param bool $deleted
-     * @param int $idPlace
+     * @param float $price
+     * @param string $duration
      */
     public function __construct($id, $name, $description, $idCategory, $deleted, $price, $duration)
     {
@@ -81,6 +84,19 @@ class ServicePlaceDTO extends AbstractDTO
             'sepl_deleted' => $this->sepl_deleted,
             'sepl_price' => $this->sepl_price,
             'sepl_duration' => $this->sepl_duration            
+        ];
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->sepl_id,
+            'name' => $this->sepl_name,
+            'description' => $this->sepl_description,
+            'idCategory' => $this->sepl_case_id,
+            'deleted' => $this->sepl_deleted,
+            'price' => $this->sepl_price,
+            'duration' => $this->sepl_duration            
         ];
     }
 }
