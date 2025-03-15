@@ -17,11 +17,10 @@ class ServicePlaceController extends Controller
 {
     public function __construct(private Service $service) {}
 
-    public function one($id){
-        cHelper::employeeNeedsSelectPlace();
-
-        return response()->json(ServicePlace::getById($id));
-    }
+    // public function one($id){
+    //     cHelper::employeeNeedsSelectPlace();
+    //     return response()->json(ServicePlace::getById($id));
+    // }
 
     public function create(ServicePlaceRequest $request){
         cHelper::employeeNeedsSelectPlace();
