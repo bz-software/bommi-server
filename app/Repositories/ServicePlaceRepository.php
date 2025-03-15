@@ -52,5 +52,12 @@ class ServicePlaceRepository
 
         return $data;
     }
+
+    public function delete($id){
+        $model = $this->getById($id);
+
+        $model->sepl_deleted = true;
+        return $model->save();
+    }
 }
 

@@ -29,5 +29,30 @@ class ServicePlaceService {
 
         return response()->json($dto->toArray(), 200);
     }
+
+    public function delete($id){
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+        $id = intval($id);
+
+        if(empty($id)){
+            return response()->json([ 'errors' => ['sepl_id' => 'Campo obrigatório'] ], 400);
+        }
+
+        $service = $this->repository->getById($id);
+        if(empty($service)){
+            return response()->json([ 'errors' => ['sepl_id' => 'Serviço não encontrado'] ], 400);
+        }
+
+        $category = $this->categoryRepository->getByIdAndPlace($service['sepl_case_id'], $idPlace);
+        if(empty($category)){
+            return response()->json([ 'errors' => ['sepl_id' => 'Serviço não pertence à categoria do estabelecimento em uso'] ], 400);
+        }
+
+        abort(500);
+        if($this->repository->delete($id)){
+            return response()->json([], 200);
+        }else{
+        }
+    }
 }
 
