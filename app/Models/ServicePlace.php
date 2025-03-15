@@ -12,8 +12,6 @@ class ServicePlace extends Model {
     const UPDATED_AT = null;
 
     protected $primaryKey = "sepl_id";
-    
-    const REQUIRED_MSG = 'Campo obrigatório';
 
     /**
      * The table associated with the model.
@@ -34,52 +32,6 @@ class ServicePlace extends Model {
         "sepl_price",
         "sepl_duration"
     ];
-
-    public static function rules($insert = true):array {
-        $rules = [
-            'sepl_name' => 'required|max:200',
-            'sepl_description' => 'max:400',
-            'sepl_case_id' => 'required',
-            'sepl_price' => 'required',
-            'sepl_duration' => 'required'
-        ];
-
-        if(!$insert){
-            $rules['sepl_id'] = 'required';
-        }
-
-        return $rules;
-    }
-
-    public static function messages():array {
-        return [
-            'sepl_id' => [
-                'required' => self::REQUIRED_MSG,
-            ],
-
-            'sepl_name' => [
-                'required' => self::REQUIRED_MSG,
-                'max' => 'O nome deve conter no máximo 200 caracteres'
-            ],
-
-            'sepl_description' => [
-                'max' => 'A descrição deve conter no máximo 400 caracteres'
-            ],
-
-            'sepl_case_id' => [
-                'required' => self::REQUIRED_MSG,
-                'max' => 'O nome deve conter no máximo 200 caracteres'
-            ],
-
-            'sepl_price' => [
-                'required' => self::REQUIRED_MSG
-            ],
-
-            'sepl_duration' => [
-                'required' => self::REQUIRED_MSG
-            ]
-        ];
-    }
 
     public static function getAllByCategory($idCategory){
         $data = ServicePlace::select("*")

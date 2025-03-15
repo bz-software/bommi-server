@@ -8,6 +8,8 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class AbstractFormRequest extends FormRequest
 {
+    const REQUIRED_MSG = 'Campo obrigatório';
+    
     public function failedValidation(Validator $validator)
     {
         // Manipula os erros para transformar no formato desejado

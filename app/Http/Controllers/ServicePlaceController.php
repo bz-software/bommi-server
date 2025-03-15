@@ -3,17 +3,19 @@
 namespace App\Http\Controllers;
 use App\Helpers\ControllerHelper as cHelper;
 use App\Models\CategoryService;
-use App\Models\EmployeePlace;
 use App\Models\ServicePlace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Symfony\Component\VarDumper\VarDumper;
+use App\Services\ServicePlaceService as Service;
+use App\DTOs\ServicePlaceDTO;
+use App\Http\Requests\ServicePlaceRequest;
 
 /**
  * Serviços que o estabelecimento realiza
  */
 class ServicePlaceController extends Controller
 {
+    public function __construct(private Service $service) {}
 
     public function one($id){
         cHelper::employeeNeedsSelectPlace();
@@ -21,38 +23,9 @@ class ServicePlaceController extends Controller
         return response()->json(ServicePlace::getById($id));
     }
 
-    public function create(Request $request){
+    public function create(ServicePlaceRequest $request){
         cHelper::employeeNeedsSelectPlace();
-
-        $idPlace = auth('employee')->user()->emp_place_id_logged;
-
-        $data = $request->all();
-        $validator = Validator::make($data, ServicePlace::rules(), ServicePlace::messages());
-        if($validator->fails()){
-            return response()->json([
-                'errors' => cHelper::getAllFirstMessages($validator->errors()->toArray())
-            ], 400);
-        }
-
-        $serviceFounded = ServicePlace::getByNameAndCategory($data['sepl_case_id'], $data['sepl_name']);
-        if(!empty($serviceFounded)){
-            $message['sepl_name'] = "Serviço já cadastrado";
-            return response()->json([
-                'errors' => $message
-            ], 400);
-        }
-
-        if(empty(CategoryService::getByIdAndPlace($data['sepl_case_id'], $idPlace))){
-            $message['sepl_name'] = "Categoria não pertence ao estabelecimento em uso";
-            return response()->json([
-                'errors' => $message
-            ], 400);
-        }
-
-        $service = new ServicePlace($data);
-        if($service->save()){
-            return response()->json($service);
-        }
+        return $this->service->create(ServicePlaceDTO::fromRequest($request));
     }
 
     public function list(){

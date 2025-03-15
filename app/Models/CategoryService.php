@@ -9,8 +9,6 @@ class CategoryService extends Model {
     const UPDATED_AT = null;
 
     protected $primaryKey = "case_id";
-    
-    const REQUIRED_MSG = 'Campo obrigatório';
 
     /**
      * The table associated with the model.
@@ -33,25 +31,4 @@ class CategoryService extends Model {
         "case_name",
         "case_place_id"
     ];
-
-    public static function rules($insert = true):array {
-        $rules = [
-            'case_name' => 'required|max:300',
-        ];
-
-        if(!$insert){
-            $rules['case_id'] = 'required';
-        }
-
-        return $rules;
-    }
-
-    public static function messages():array {
-        return [
-            'case_name' => [
-                'required' => self::REQUIRED_MSG,
-                'max' => 'O nome deve conter no máximo 300 caracteres'
-            ]
-        ];
-    }
 }
