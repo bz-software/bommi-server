@@ -68,14 +68,4 @@ class CategoryServiceDTO extends AbstractDTO
             'case_place_id' => $this->case_place_id,
         ];
     }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->case_id,
-            'name' => $this->case_name,
-            'deleted' => $this->case_deleted,
-            'idPlace' => $this->case_place_id,
-        ];
-    }
 }

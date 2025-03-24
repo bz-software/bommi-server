@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Services\ServicePlaceService as Service;
 use App\DTOs\ServicePlaceDTO;
 use App\Http\Requests\ServicePlaceRequest;
+use App\Http\Resources\ServicePlace\ServicePlaceResource;
 
 /**
  * Serviços que o estabelecimento realiza
@@ -24,7 +25,7 @@ class ServicePlaceController extends Controller
 
     public function create(ServicePlaceRequest $request){
         cHelper::employeeNeedsSelectPlace();
-        return $this->service->create(ServicePlaceDTO::fromRequest($request));
+        return new ServicePlaceResource($this->service->create(ServicePlaceDTO::fromRequest($request)));
     }
 
     public function list(){
@@ -41,11 +42,11 @@ class ServicePlaceController extends Controller
      */
     public function update(ServicePlaceRequest $request){
         cHelper::employeeNeedsSelectPlace();
-        return $this->service->update(ServicePlaceDTO::fromRequest($request));
+        return new ServicePlaceResource($this->service->update(ServicePlaceDTO::fromRequest($request)));
     }
 
     public function byCategory($idCategory){
         cHelper::employeeNeedsSelectPlace();
-        return $this->service->byCategory($idCategory);
+        return ServicePlaceResource::collection($this->service->byCategory($idCategory));
     }
 }

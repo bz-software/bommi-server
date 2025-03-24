@@ -86,17 +86,4 @@ class ServicePlaceDTO extends AbstractDTO
             'sepl_duration' => $this->sepl_duration            
         ];
     }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->sepl_id,
-            'name' => $this->sepl_name,
-            'description' => $this->sepl_description,
-            'idCategory' => $this->sepl_case_id,
-            'deleted' => $this->sepl_deleted,
-            'price' => $this->sepl_price,
-            'duration' => $this->sepl_duration            
-        ];
-    }
 }

@@ -19,10 +19,8 @@ class ServicePlaceRepository
         if(!$service->save()){
             abort(500);
         }
-
-        $dto->sepl_id = $service->sepl_id;
         
-        return $dto;
+        return $this->model->find($service['sepl_id']);
     }
 
     public function getAllByCategory($idCategory){
@@ -76,7 +74,7 @@ class ServicePlaceRepository
             abort(500);
         }
 
-        return $dto->fromArray($service->toArray());
+        return $service;
     }
 }
 

@@ -4,6 +4,7 @@ namespace App\Services;
 use App\DTOs\ServicePlaceDTO;
 use App\Repositories\ServicePlaceRepository;
 use App\Repositories\CategoryServiceRepository;
+use App\Exceptions\ServiceException;
 
 class ServicePlaceService {
     public function __construct(
@@ -17,17 +18,15 @@ class ServicePlaceService {
         $serviceFounded = $this->repository->getByNameAndCategory($dto->sepl_case_id, $dto->sepl_name);
         if(!empty($serviceFounded)){
             $message['sepl_name'] = "Serviço já cadastrado";
-            return response()->json(['errors' => $message], 400);
+            throw new ServiceException($message, 400);
         }
 
         if(empty($this->categoryRepository->getByIdAndPlace($dto->sepl_case_id, $idPlace))){
             $message['sepl_name'] = "Categoria não pertence ao estabelecimento em uso";
-            return response()->json(['errors' => $message], 400);
+            throw new ServiceException($message, 400);
         }
 
-        $dto = $this->repository->store($dto);
-
-        return response()->json($dto->toArray(), 200);
+        return $this->repository->store($dto);
     }
 
     public function delete($id){
@@ -35,21 +34,22 @@ class ServicePlaceService {
         $id = intval($id);
 
         if(empty($id)){
-            return response()->json([ 'errors' => ['sepl_id' => 'Campo obrigatório'] ], 400);
+            throw new ServiceException(['id' => 'Campo obrigatório'], 400);
         }
 
         $service = $this->repository->getById($id);
         if(empty($service)){
-            return response()->json([ 'errors' => ['sepl_id' => 'Serviço não encontrado'] ], 400);
+            throw new ServiceException(['id' => 'Serviço não encontrado'], 400);
         }
 
         $category = $this->categoryRepository->getByIdAndPlace($service['sepl_case_id'], $idPlace);
         if(empty($category)){
-            return response()->json([ 'errors' => ['sepl_id' => 'Serviço não pertence à categoria do estabelecimento em uso'] ], 400);
+            throw new ServiceException(['id' => 'Serviço não pertence à categoria do estabelecimento em uso'], 400);
         }
 
-        $this->repository->delete($id);
-        return response('');
+        if($this->repository->delete($id)){
+            return response()->noContent(200);
+        }
     }
 
     public function update(ServicePlaceDTO $dto){
@@ -57,35 +57,27 @@ class ServicePlaceService {
 
         if(empty($this->categoryRepository->getByIdAndPlace($dto->sepl_case_id, $idPlace))){
             $message['sepl_name'] = "Categoria não pertence ao estabelecimento em uso";
-            return response()->json( [ 'errors' => $message ], 400);
+            throw new ServiceException($message, 400);
         }
 
         $service = $this->repository->getById($dto->sepl_id);
         if(empty($service)){
             $message['sepl_name'] = "Serviço não encontrado";
-            return response()->json([ 'errors' => $message ], 400);
+            throw new ServiceException($message, 400);
         }
 
-        $dto = $this->repository->update($dto);
-        return response()->json($dto->toArray());
+        return $this->repository->update($dto);
     }
 
     public function byCategory($idCategory){
         $category = $this->categoryRepository->getById($idCategory);
 
         if(empty($category)){
-            $message['errors']['sepl_case_id'] = "Categoria inválida";
-            return response()->json([ 'errors' => $message ], 400);
+            $message['sepl_case_id'] = "Categoria inválida";
+            throw new ServiceException($message, 400);
         }
 
-        $services = $this->repository->getAllByCategory($idCategory);
-
-        $dtos = collect();
-        if ($services->isNotEmpty()) {
-            $dtos = $services->map(fn($service) => ServicePlaceDTO::fromArray($service->toArray()));
-        }
-
-        return response()->json(['services' => $dtos->map(fn($dto) => $dto->toArray())], 200);
+        return $this->repository->getAllByCategory($idCategory);
     }
 }
 
