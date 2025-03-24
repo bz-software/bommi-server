@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 use App\Helpers\ControllerHelper as cHelper;
 use App\Http\Requests\StoreCategoryServiceRequest;
-use App\Models\CategoryService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use App\Services\CategoryServiceService as Service;
 use App\DTOs\CategoryServiceDTO;
-use App\Http\Resources\CategoryServiceResource;
+use App\Http\Resources\CategoryService\CategoryServiceResource;
 
 class CategoryServiceController extends Controller
 {
