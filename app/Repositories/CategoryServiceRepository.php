@@ -18,9 +18,7 @@ class CategoryServiceRepository
             abort(500);
         }
         
-        $dto->case_id = $category->case_id;
-        
-        return $dto;
+        return $this->model->find($category['case_id']);
     }
 
     public function update(CategoryServiceDTO $dto)
@@ -34,7 +32,7 @@ class CategoryServiceRepository
             abort(500);
         }
 
-        return $dto->fromArray($category->toArray());
+        return $this->model->find($category['case_id']);
     }
 
     public function getByNameAndPlace($idPlace, $name, $idExcept = null){

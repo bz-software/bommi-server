@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\DTOs\CategoryServiceDTO;
 use App\Repositories\CategoryServiceRepository;
+use App\Exceptions\ServiceException;
 
 class CategoryServiceService {
     public function __construct(private CategoryServiceRepository $repository) {}
@@ -13,14 +14,10 @@ class CategoryServiceService {
 
         if($this->exists($dto->case_place_id, $dto->case_name)){
             $message['name'] = "Categoria já cadastrada";
-            return response()->json([
-                'errors' => $message
-            ], 400);
+            throw new ServiceException($message, 400, 'Categoria já cadastrada');
         }
 
-        $dto = $this->repository->store($dto);
-
-        return response()->json($dto->toArray());
+        return $this->repository->store($dto);
     }
 
     public function update(CategoryServiceDTO $dto){
@@ -28,34 +25,20 @@ class CategoryServiceService {
 
         if($this->exists($dto->case_place_id, $dto->case_name, $dto->case_id)){
             $message['case_name'] = "Categoria já cadastrada";
-            return response()->json([
-                'errors' => $message
-            ], 400);
+            throw new ServiceException($message, 400);
         }
 
         if(empty($this->repository->getByIdAndPlace($dto->case_id, $dto->case_place_id))){
             $message['case_name'] = "Categoria não pertence ao estabelecimento ou não existe";
-            return response()->json([
-                'errors' => $message
-            ], 400);
+            throw new ServiceException($message, 400);
         }
 
-        $dto = $this->repository->update($dto);
-
-        return response()->json($dto->toArray());
+        return $this->repository->update($dto);
     }
 
     public function list(){
         $idPlace = auth('employee')->user()->emp_place_id_logged;
-        $categories = $this->repository->getByPlace($idPlace);
-
-        $dtos = collect();
-
-        if ($categories->isNotEmpty()) {
-            $dtos = $categories->map(fn($category) => CategoryServiceDTO::fromArray($category->toArray()));
-        }
-
-        return response()->json(['categories' => $dtos->map(fn($dto) => $dto->toArray())], 200);
+        return $this->repository->getByPlace($idPlace);
     }
 
     public function delete($id){
@@ -63,23 +46,19 @@ class CategoryServiceService {
         $id = intval($id);
 
         if(empty($id)){
-            return response()->json([
-                'errors' => ['case_id' => 'Campo obrigatório']
-            ], 400);
+            throw new ServiceException(['case_id' => 'Campo obrigatório'], 400);
         }
 
         $category = $this->repository->getByIdAndPlace($id, $idPlace);
         if(empty($category)){
-            return response()->json([
-                'errors' => ['case_id' => 'Categoria não pertence ao estabelecimento em uso']
-            ], 400);
+            throw new ServiceException(['case_id' => 'Categoria não pertence ao estabelecimento em uso'], 400);
         }
 
         $category->case_deleted = true;
         $success = $category->save();
 
         if($success){
-            return response()->json([], 200);
+            return response()->noContent(200);
         }
         
         abort(500);

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Services\CategoryServiceService as Service;
 use App\DTOs\CategoryServiceDTO;
+use App\Http\Resources\CategoryServiceResource;
 
 class CategoryServiceController extends Controller
 {
@@ -20,17 +21,17 @@ class CategoryServiceController extends Controller
 
     public function create(StoreCategoryServiceRequest $request){
         cHelper::employeeNeedsSelectPlace();
-        return $this->service->create(CategoryServiceDTO::fromRequest($request));
+        return new CategoryServiceResource($this->service->create(CategoryServiceDTO::fromRequest($request)));
     }
 
     public function update(Request $request){
         cHelper::employeeNeedsSelectPlace();
-        return $this->service->update(CategoryServiceDTO::fromRequest($request));
+        return new CategoryServiceResource($this->service->update(CategoryServiceDTO::fromRequest($request)));
     }
 
     public function list(){
         cHelper::employeeNeedsSelectPlace();
-        return $this->service->list();
+        return CategoryServiceResource::collection($this->service->list());
     }
 
     public function delete($id){

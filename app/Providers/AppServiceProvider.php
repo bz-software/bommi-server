@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
         $this->cpfValidator();
         $this->cnpj();
         $this->phoneNumber();
+        JsonResource::withoutWrapping();
     }
 
     public function cpfValidator(){
