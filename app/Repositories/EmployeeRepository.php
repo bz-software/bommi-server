@@ -2,6 +2,7 @@
 namespace App\Repositories;
 
 use App\DTOs\CreateEmployeeAuthDTO;
+use App\DTOs\CreateEmployeeDTO;
 use App\Enums\EmployeeType;
 use App\Models\Employee as EmployeeModel;
 use Carbon\Carbon;
@@ -19,13 +20,27 @@ class EmployeeRepository
         $employee->emp_birthdate = Carbon::parse($dto->emp_birthdate)->translatedFormat('Y-m-d');
         $employee->emp_password = Hash::make($dto->emp_password);
         $employee->emp_type = EmployeeType::Owner->value;
-        $employee->save();
 
         if(!$employee->save()){
             abort(500);
         }
         
         return $this->model->find($employee->emp_id);
+    }
+
+    public function store(CreateEmployeeDTO $dto){
+        $model = new $this->model;
+        $model->fill($dto->toArray());
+
+        $model->emp_birthdate = Carbon::parse($model->emp_birthdate)->translatedFormat('Y-m-d');
+        $model->emp_password = Hash::make($model->emp_password);
+        $model->emp_type = $dto->emp_type;
+        
+        if(!$model->save()){
+            abort(500);
+        }
+        
+        return $this->model->find($model->emp_id);
     }
 
     public function update($dto)
