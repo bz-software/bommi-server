@@ -132,27 +132,6 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
         return $employeeModel->save();
     }
 
-    public static function getByCpf($cpf, $idExcept = null){
-        $employee = Employee::select('*')
-            ->where('emp_cpf', '=', $cpf)
-            ->where('emp_deleted', '=', false)
-            ->when($idExcept !== null, function ($query) use ($idExcept) {
-                $query->where('emp_id', '!=', $idExcept);
-            })
-        ->first();
-        
-        return $employee;
-    }
-
-    public static function getById($id, $idPlace = null){
-        $employee = Employee::select('*')
-            ->where('emp_deleted', '=', false)
-            ->where('emp_id', '=', $id)
-            ->first();
-
-        return self::setType($employee, $idPlace);
-    }
-
     public static function setType($employee, $idPlace = null){
         $employee['emp_type'] = null;
         $employee['emp_type_name'] = null;

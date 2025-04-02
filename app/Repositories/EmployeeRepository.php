@@ -52,5 +52,15 @@ class EmployeeRepository
             ->where('emp_id', '=', $id)
             ->first();
     }
+
+    public function getByCpf($cpf, $idExcept = null){
+        return $this->model::select('*')
+            ->where('emp_cpf', '=', $cpf)
+            ->where('emp_deleted', '=', false)
+            ->when($idExcept !== null, function ($query) use ($idExcept) {
+                $query->where('emp_id', '!=', $idExcept);
+            })
+        ->first();
+    }
 }
 

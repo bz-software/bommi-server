@@ -36,8 +36,8 @@ Route::post('/auth/employee/logout', [AuthEmployeeController::class, 'logout']);
 Route::post('/auth/employee/refresh', [AuthEmployeeController::class, 'refresh']);
 Route::post('/auth/employee', [AuthEmployeeController::class, 'create']);
 //PUBLICS
-Route::get('/employee', [EmployeeController::class, 'one']);
 //ADMIN
+Route::get('/admin/employee', [EmployeeController::class, 'one'])->middleware('auth:employee');
 Route::put('/admin/employee', [EmployeeController::class, 'update'])->middleware('auth:employee');
 Route::put('/admin/employee/attendance', [EmployeeController::class, 'updateAttendance'])->middleware('auth:employee');
 Route::get('/admin/employee/attendance', [EmployeeController::class, 'listAttendance'])->middleware('auth:employee');
