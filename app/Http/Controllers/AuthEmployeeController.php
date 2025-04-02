@@ -4,17 +4,9 @@ namespace App\Http\Controllers;
 
 use App\DTOs\AuthEmployeeDTO;
 use App\DTOs\CreateEmployeeAuthDTO;
-use App\Enums\EmployeeType;
-use App\Models\Employee;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use App\Helpers\ControllerHelper as cHelper;
 use App\Http\Requests\AuthEmployeeRequest;
 use App\Http\Requests\CreateEmployeeAuthRequest;
 use App\Http\Resources\Auth\AuthResource;
-use Carbon\Carbon;
-use App\Models\Place;
 use App\Services\AuthEmployeeService as Service;
 
 class AuthEmployeeController extends Controller

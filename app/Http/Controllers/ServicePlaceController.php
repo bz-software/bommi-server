@@ -18,18 +18,9 @@ class ServicePlaceController extends Controller
 {
     public function __construct(private Service $service) {}
 
-    // public function one($id){
-    //     cHelper::employeeNeedsSelectPlace();
-    //     return response()->json(ServicePlace::getById($id));
-    // }
-
     public function create(ServicePlaceRequest $request){
         cHelper::employeeNeedsSelectPlace();
         return new ServicePlaceResource($this->service->create(ServicePlaceDTO::fromRequest($request)));
-    }
-
-    public function list(){
-        cHelper::employeeNeedsSelectPlace();
     }
 
     public function delete($id){
