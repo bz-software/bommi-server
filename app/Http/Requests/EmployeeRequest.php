@@ -6,7 +6,7 @@ use App\Enums\EmployeeType;
 use App\Http\Requests\AbstractFormRequest;
 use Illuminate\Validation\Rule;
 
-class CreateEmployeeRequest extends AbstractFormRequest
+class EmployeeRequest extends AbstractFormRequest
 {
     public function authorize(): bool
     {
@@ -16,7 +16,7 @@ class CreateEmployeeRequest extends AbstractFormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('put');
-        $id = $this->input('id', 'NULL');
+        $id = auth('employee')->user()->emp_id;
 
         return [
             'firstName' => ['required', 'max:100'],
@@ -32,6 +32,7 @@ class CreateEmployeeRequest extends AbstractFormRequest
             'birthdate' => [
                 'required',
                 'date',
+                'date_format:Y-m-d',
                 'before_or_equal:' . now()->subYears(18)->format('Y-m-d')
             ],
             'email' => [
@@ -43,9 +44,10 @@ class CreateEmployeeRequest extends AbstractFormRequest
             ],
             'password' => [$isUpdate ? 'nullable' : 'required', 'min:6'],
             'type' => [
-                'required',
+                $isUpdate ? 'nullable' : 'required',
                 Rule::in(EmployeeType::values())
-            ]
+            ],
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg|dimensions:min_width=100,min_height=100|max:2048'
         ];
     }
 
@@ -69,7 +71,8 @@ class CreateEmployeeRequest extends AbstractFormRequest
             'birthdate' => [
                 'required' => self::REQUIRED_MSG,
                 'date' => 'Data inválida',
-                'before_or_equal' => 'Você precisa ser maior de 18 anos'
+                'before_or_equal' => 'Você precisa ser maior de 18 anos',
+                'date_format' => "Formato de data inválida"
             ],
 
             'email' => [
@@ -86,7 +89,7 @@ class CreateEmployeeRequest extends AbstractFormRequest
                 'image' => 'O arquivo deve ser uma imagem.',
                 'mimes' => 'A imagem deve ser nos formatos JPEG, PNG ou JPG.',
                 'dimensions' => 'A imagem deve ter pelo menos 100px de largura e 100px de altura.',
-                'max' => 'A imagem não pode exceder 2MB.',
+                'max' => 'A imagem não pode exceder 2MB.'
             ],
 
             'type' => [

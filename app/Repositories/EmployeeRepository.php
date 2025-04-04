@@ -6,7 +6,9 @@ use App\DTOs\CreateEmployeeDTO;
 use App\Enums\EmployeeType;
 use App\Models\Employee as EmployeeModel;
 use Carbon\Carbon;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeRepository
 {
@@ -43,18 +45,37 @@ class EmployeeRepository
         return $this->model->find($model->emp_id);
     }
 
-    public function update($dto)
-    {
-        $data = $dto->toModel();
-        
-        $category = $this->model->find($dto->case_id);
-        $category->fill($data);
+    public function update(CreateEmployeeDTO $dto)
+    {   
+        $model = $this->model->find($dto->emp_id);
+        $model->emp_first_name = $dto->emp_first_name;
+        $model->emp_last_name = $dto->emp_last_name;
+        $model->emp_cpf = $dto->emp_cpf;
+        $model->emp_birthdate = Carbon::parse($dto->emp_birthdate)->translatedFormat('Y-m-d');
 
-        if(!$category->save()){
+        $nameFile = $this->storeAvatar($dto->avatar, $dto->emp_id);
+        $model->emp_avatar = !empty($nameFile) ? $nameFile : $model->emp_avatar;
+
+        if(!$model->save()){
             abort(500);
         }
 
-        // return $this->model->find($category['case_id']);
+        return $model;
+    }
+
+    public function storeAvatar(?UploadedFile $avatar, $idEmployee){
+        if(empty($avatar)){
+            return null;
+        }
+
+        $avatarName = $idEmployee . '_' . rand(0, 9999) . '.' . $avatar->getClientOriginalExtension();
+        $path = $avatar->storeAs('public/employee_avatar', $avatarName);
+
+        if(Storage::exists($path)){
+            return $avatarName;
+        }
+
+        abort(500);
     }
 
     public function getByEmail($email){

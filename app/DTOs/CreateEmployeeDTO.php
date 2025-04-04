@@ -3,6 +3,7 @@
 namespace App\DTOs;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 
 class CreateEmployeeDTO extends AbstractDTO
 {
@@ -15,6 +16,7 @@ class CreateEmployeeDTO extends AbstractDTO
     public $emp_birthdate;
     public $emp_cpf;
     public $emp_type;
+    public ?UploadedFile $avatar = null;
 
     /**
      * CreateEmployeeDTO constructor.
@@ -37,7 +39,8 @@ class CreateEmployeeDTO extends AbstractDTO
         $phoneNumber,
         $birthdate,
         $cpf,
-        $type
+        $type,
+        $avatar
     )
     {
         $this->emp_id = $id;
@@ -49,6 +52,7 @@ class CreateEmployeeDTO extends AbstractDTO
         $this->emp_birthdate = $birthdate;
         $this->emp_cpf = $cpf;
         $this->emp_type = $type;
+        $this->avatar = $avatar;
     }
 
     /**
@@ -69,6 +73,7 @@ class CreateEmployeeDTO extends AbstractDTO
             $request->input('birthdate') ?? null,
             $request->input('cpf') ?? null,
             $request->input('type') ?? null,
+            $request->file('avatar') ?? null
         );
     }
 }

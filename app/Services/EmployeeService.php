@@ -84,4 +84,13 @@ class EmployeeService
             return $employee;
         }
     }
+
+    public function update(CreateEmployeeDTO $dto){
+        cHelper::employeeNeedsSelectPlace();        
+
+        $dto->emp_id = auth('employee')->user()->emp_id;
+        $dto->emp_cpf = preg_replace('/\D/', '', $dto->emp_cpf);
+
+        return $this->repository->update($dto);
+    }
 }
