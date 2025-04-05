@@ -1,5 +1,7 @@
 <?php
 namespace App\Repositories;
+
+use App\DTOs\EmployeePlaceAttendanceDTO;
 use App\Models\EmployeePlace as Model;
 
 class EmployeePlaceRepository
@@ -14,6 +16,9 @@ class EmployeePlaceRepository
         }
     }
 
+    /**
+     * @return Model|null
+     */
     public function get($idEmployee, $idPlace){
         $employeePlace = $this->model->select('*')
             ->where('ep_place_id', '=', $idPlace)
@@ -35,6 +40,18 @@ class EmployeePlaceRepository
         }
         
         return $this->model->find($model->ep_id);
+    }
+
+    public function updateAttendance(EmployeePlaceAttendanceDTO $dto){
+        $model = $this->get($dto->ep_employee_id, $dto->ep_place_id);
+        $model->ep_clock_in = $dto->ep_clock_in;
+        $model->ep_clock_out = $dto->ep_clock_out;
+
+        if(!$model->save()){
+            abort(500);
+        }
+        
+        return $model;
     }
 }
 

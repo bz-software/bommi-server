@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\DTOs\CreateEmployeeDTO;
+use App\DTOs\EmployeePlaceAttendanceDTO;
 use App\Enums\EmployeeType;
 use App\Exceptions\ServiceException;
 use App\Helpers\ControllerHelper as cHelper;
@@ -92,5 +93,19 @@ class EmployeeService
         $dto->emp_cpf = preg_replace('/\D/', '', $dto->emp_cpf);
 
         return $this->repository->update($dto);
+    }
+
+    public function updateAttendance(EmployeePlaceAttendanceDTO $dto){
+        cHelper::employeeNeedsSelectPlace();
+
+        $dto->ep_place_id = auth('employee')->user()->emp_place_id_logged;
+        $dto->ep_employee_id = auth('employee')->user()->emp_id;
+
+        $employeePlace = $this->epRepository->get($dto->ep_employee_id, $dto->ep_place_id);
+        abort_if(empty($employeePlace), 404);
+
+        $this->epRepository->updateAttendance($dto);
+        
+        return response()->noContent(200);
     }
 }

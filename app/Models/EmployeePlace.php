@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $ep_deleted
  * @property string $ep_deleted_at
  * @property int $ep_employee_type
+ * @property string $ep_clock_in
+ * @property string $ep_clock_out
  */
 class EmployeePlace extends Model {
 
