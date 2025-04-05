@@ -111,7 +111,7 @@ class EmployeeService
 
     public function listAttendance(){
         cHelper::employeeNeedsSelectPlace();
-        
+
         $idPlace = auth('employee')->user()->emp_place_id_logged;
         $idEmployee = auth('employee')->user()->emp_id;
 
@@ -119,5 +119,14 @@ class EmployeeService
         abort_if(empty($employeePlace), 404);
 
         return $employeePlace;
+    }
+
+    public function list(){
+        cHelper::employeeNeedsSelectPlace();
+        $idUser = auth('employee')->user()->emp_id;
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+
+
+        return $this->repository->getAllActiveByPlace($idPlace, $idUser);
     }
 }

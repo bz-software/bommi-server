@@ -98,5 +98,17 @@ class EmployeeRepository
             })
         ->first();
     }
+
+    public function getAllActiveByPlace($idPlace, $employeeExcept = null){
+        return $this->model::select('employees.*')
+        ->join('employees_place', 'employees_place.ep_employee_id', '=', 'employees.emp_id')
+        ->where('employees_place.ep_place_id', $idPlace)
+        ->where('employees.emp_deleted', 0)
+        ->where('employees_place.ep_deleted', false)
+        ->when(intval($employeeExcept) > 0, function ($query) use ($employeeExcept) {
+            $query->where('employees.emp_id', '!=', $employeeExcept);
+        })
+        ->get();
+    }
 }
 

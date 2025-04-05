@@ -156,36 +156,6 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
         return $employee;
     }
 
-    public static function getAllActiveByPlace($idPlace, $employeeExcept = null){
-        // SELECT * FROM employees e
-        // INNER JOIN employees_place ep ON ep.ep_employee_id = e.emp_id
-        // WHERE ep.ep_place_id = 7
-        // AND e.emp_deleted = false
-
-        if(intval($employeeExcept) > 0){
-            $employees = Employee::select('*')
-                ->join('employees_place', 'employees_place.ep_employee_id', '=', 'employees.emp_id')
-                ->where('employees_place.ep_place_id', '=', $idPlace)
-                ->where('employees.emp_deleted', '=', 0)
-                ->where('employees.emp_id', '!=', $employeeExcept)
-                ->where('employees_place.ep_deleted', '=', false)
-                ->get();
-        }else{
-            $employees = Employee::select('*')
-                ->join('employees_place', 'employees_place.ep_employee_id', '=', 'employees.emp_id')
-                ->where('employees_place.ep_place_id', '=', $idPlace)
-                ->where('employees.emp_deleted', '=', 0)
-                ->where('employees_place.ep_deleted', '=', false)
-                ->get();
-        }
-
-        foreach($employees as $i => $employee){
-            $employees[$i] = self::setType($employee, $idPlace);
-        }
-
-        return $employees;
-    }
-
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *

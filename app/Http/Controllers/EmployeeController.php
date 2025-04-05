@@ -50,13 +50,7 @@ class EmployeeController extends Controller
     }
 
     public function list(){
-        cHelper::employeeNeedsSelectPlace();
-        $idUser = auth('employee')->user()->emp_id;
-        $idPlace = auth('employee')->user()->emp_place_id_logged;
-
-
-        $employees = Employee::getAllActiveByPlace($idPlace, $idUser);
-        return response()->json(['employees' => $employees], 200);
+        return EmployeeResource::collection($this->service->list());
     }
 
     public function delete($id){
