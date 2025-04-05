@@ -3,6 +3,7 @@ namespace App\Repositories;
 
 use App\DTOs\EmployeePlaceAttendanceDTO;
 use App\Models\EmployeePlace as Model;
+use Carbon\Carbon;
 
 class EmployeePlaceRepository
 {
@@ -52,6 +53,33 @@ class EmployeePlaceRepository
         }
         
         return $model;
+    }
+
+    public function unset($idEmployee){
+        $now = Carbon::now();
+        $idOwner = auth('employee')->user()->emp_id;
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+
+        $employeePlace = $this->model::select('employees_place.*')
+            ->join('places as p', 'p.pla_id', '=', 'employees_place.ep_place_id')
+            ->join('employees as owner', 'owner.emp_id', '=', 'p.pla_employee_id')
+            ->where('p.pla_id', '=', $idPlace)
+            ->where('owner.emp_id', '=', $idOwner)
+            ->where('employees_place.ep_employee_id', '=', $idEmployee)
+            ->first();
+
+        if(!empty($employeePlace)){
+            $employeePlace->ep_deleted = true;
+            $employeePlace->ep_deleted_at = $now->toDateTimeString();
+            
+            if(!$employeePlace->save()){
+                abort(500);
+            }
+            
+            return true;
+        }
+
+        abort(404);
     }
 }
 

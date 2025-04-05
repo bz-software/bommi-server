@@ -76,29 +76,6 @@ class EmployeePlace extends Model {
         ];
     }
 
-    public static function unset($idEmployee){
-        $now = Carbon::now();
-        $idOwner = auth('employee')->user()->emp_id;
-        $idPlace = auth('employee')->user()->emp_place_id_logged;
-
-        $employeePlace = EmployeePlace::select('employees_place.*')
-            ->join('places as p', 'p.pla_id', '=', 'employees_place.ep_place_id')
-            ->join('employees as owner', 'owner.emp_id', '=', 'p.pla_employee_id')
-            ->where('p.pla_id', '=', $idPlace)
-            ->where('owner.emp_id', '=', $idOwner)
-            ->where('employees_place.ep_employee_id', '=', $idEmployee)
-            ->first();
-
-        if(!empty($employeePlace)){
-            $employeePlace->ep_deleted = true;
-            $employeePlace->ep_deleted_at = $now->toDateTimeString();
-            
-            return $employeePlace->save();
-        }
-
-        return false;
-    }
-
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'ep_employee_id', 'emp_id');

@@ -129,4 +129,14 @@ class EmployeeService
 
         return $this->repository->getAllActiveByPlace($idPlace, $idUser);
     }
+
+    public function delete($id){
+        cHelper::employeeNeedsSelectPlace();
+        
+        $idEmployee = $id;
+        
+        $this->epRepository->unset($idEmployee);
+        
+        return response()->noContent(200);
+    }
 }
