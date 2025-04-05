@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\DTOs\CategoryServiceDTO;
+use App\Exceptions\RepositoryException;
 use App\Repositories\CategoryServiceRepository;
 use App\Exceptions\ServiceException;
 
@@ -61,7 +62,7 @@ class CategoryServiceService {
             return response()->noContent(200);
         }
         
-        abort(500);
+        throw new RepositoryException("Falha interna ao excluir categoria", 500);
     }
 
     public function exists($idPlace, $name, $idExcept = null)

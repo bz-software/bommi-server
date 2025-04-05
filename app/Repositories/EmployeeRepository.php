@@ -4,6 +4,7 @@ namespace App\Repositories;
 use App\DTOs\CreateEmployeeAuthDTO;
 use App\DTOs\CreateEmployeeDTO;
 use App\Enums\EmployeeType;
+use App\Exceptions\RepositoryException;
 use App\Models\Employee as EmployeeModel;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
@@ -24,7 +25,7 @@ class EmployeeRepository
         $employee->emp_type = EmployeeType::Owner->value;
 
         if(!$employee->save()){
-            abort(500);
+            throw new RepositoryException("Falha interna ao criar conta", 500);
         }
         
         return $this->model->find($employee->emp_id);
@@ -39,7 +40,7 @@ class EmployeeRepository
         $model->emp_type = $dto->emp_type;
         
         if(!$model->save()){
-            abort(500);
+            throw new RepositoryException("Falha interna ao criar funcionário", 500);
         }
         
         return $this->model->find($model->emp_id);
@@ -57,7 +58,7 @@ class EmployeeRepository
         $model->emp_avatar = !empty($nameFile) ? $nameFile : $model->emp_avatar;
 
         if(!$model->save()){
-            abort(500);
+            throw new RepositoryException("Falha interna ao alterar dados pessoais", 500);
         }
 
         return $model;
@@ -75,7 +76,7 @@ class EmployeeRepository
             return $avatarName;
         }
 
-        abort(500);
+        throw new RepositoryException("Falha interna ao salvar foto de perfil", 500);
     }
 
     public function getByEmail($email){

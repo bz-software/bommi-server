@@ -2,6 +2,7 @@
 namespace App\Repositories;
 
 use App\DTOs\EmployeePlaceAttendanceDTO;
+use App\Exceptions\RepositoryException;
 use App\Models\EmployeePlace as Model;
 use Carbon\Carbon;
 
@@ -37,7 +38,7 @@ class EmployeePlaceRepository
         $model->ep_employee_type = $type;
 
         if(!$model->save()){
-            abort(500);
+            throw new RepositoryException("Falha interna ao salvar funcionário", 500);
         }
         
         return $this->model->find($model->ep_id);
@@ -49,7 +50,7 @@ class EmployeePlaceRepository
         $model->ep_clock_out = $dto->ep_clock_out;
 
         if(!$model->save()){
-            abort(500);
+            throw new RepositoryException("Falha interna ao atualizar carga horária", 500);
         }
         
         return $model;
@@ -73,13 +74,13 @@ class EmployeePlaceRepository
             $employeePlace->ep_deleted_at = $now->toDateTimeString();
             
             if(!$employeePlace->save()){
-                abort(500);
+                throw new RepositoryException("Falha interna ao atualizar excluir funcionário", 500);
             }
             
             return true;
         }
 
-        abort(404);
+        throw new RepositoryException("Não foi possível excluir o funcionário, motivo: funcionário não encontrado", 500);
     }
 }
 

@@ -102,7 +102,10 @@ class EmployeeService
         $dto->ep_employee_id = auth('employee')->user()->emp_id;
 
         $employeePlace = $this->epRepository->get($dto->ep_employee_id, $dto->ep_place_id);
-        abort_if(empty($employeePlace), 404);
+
+        if(empty($employeePlace)){
+            throw new ServiceException([], 404, "Funcionário não encontrado");
+        }
 
         $this->epRepository->updateAttendance($dto);
         
@@ -116,7 +119,9 @@ class EmployeeService
         $idEmployee = auth('employee')->user()->emp_id;
 
         $employeePlace = $this->epRepository->get($idEmployee, $idPlace);
-        abort_if(empty($employeePlace), 404);
+        if(empty($employeePlace)){
+            throw new ServiceException([], 404, "Funcionário não encontrado");
+        }
 
         return $employeePlace;
     }

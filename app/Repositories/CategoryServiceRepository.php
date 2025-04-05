@@ -3,6 +3,7 @@ namespace App\Repositories;
 
 use App\DTOs\CategoryServiceDTO;
 use App\Models\CategoryService as CategoryServiceModel;
+use App\Exceptions\RepositoryException;
 
 class CategoryServiceRepository
 {
@@ -15,7 +16,7 @@ class CategoryServiceRepository
         $category = new $this->model($data);
 
         if(!$category->save()){
-            abort(500);
+            throw new RepositoryException("Falha interna ao salvar categoria", 500);
         }
         
         return $this->model->find($category['case_id']);
@@ -29,7 +30,7 @@ class CategoryServiceRepository
         $category->fill($data);
 
         if(!$category->save()){
-            abort(500);
+            throw new RepositoryException("Falha interna ao alterar categoria", 500);
         }
 
         return $this->model->find($category['case_id']);

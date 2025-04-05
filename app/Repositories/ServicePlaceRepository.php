@@ -2,6 +2,7 @@
 namespace App\Repositories;
 
 use App\DTOs\ServicePlaceDTO;
+use App\Exceptions\RepositoryException;
 use App\Models\ServicePlace as ServicePlaceModel;
 
 class ServicePlaceRepository
@@ -17,7 +18,7 @@ class ServicePlaceRepository
         $service = new $this->model($data);
 
         if(!$service->save()){
-            abort(500);
+            throw new RepositoryException("Falha interna ao salvar serviço", 500);
         }
         
         return $this->model->find($service['sepl_id']);
@@ -57,7 +58,7 @@ class ServicePlaceRepository
         $service->sepl_deleted = true;
 
         if(!$service->save()){
-            abort(500);
+            throw new RepositoryException("Falha interna ao excluir serviço", 500);
         }
 
         return true;
@@ -71,7 +72,7 @@ class ServicePlaceRepository
         $service->sepl_duration = $dto->sepl_duration;
 
         if(!$service->save()){
-            abort(500);
+            throw new RepositoryException("Falha interna ao alterar serviço", 500);
         }
 
         return $service;
