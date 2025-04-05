@@ -10,6 +10,7 @@ use App\Http\Requests\EmployeeRequest;
 use App\Http\Requests\EmployeeByCpfRequest;
 use App\Http\Requests\EmployeePlaceRequest;
 use App\Http\Resources\Auth\AuthResource;
+use App\Http\Resources\Employee\EmployeePlaceAttendanceResource;
 use App\Http\Resources\Employee\EmployeeResource;
 use App\Models\Employee;
 use App\Models\EmployeePlace;
@@ -45,15 +46,7 @@ class EmployeeController extends Controller
     }
 
     public function listAttendance(){
-        cHelper::employeeNeedsSelectPlace();
-
-        $idPlace = auth('employee')->user()->emp_place_id_logged;
-        $idEmployee = auth('employee')->user()->emp_id;
-
-        $employeePlace = EmployeePlace::get($idEmployee, $idPlace);
-        abort_if(empty($employeePlace), 404);
-
-        return response()->json($employeePlace);
+        return new EmployeePlaceAttendanceResource($this->service->listAttendance());
     }
 
     public function list(){

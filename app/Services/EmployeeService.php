@@ -108,4 +108,16 @@ class EmployeeService
         
         return response()->noContent(200);
     }
+
+    public function listAttendance(){
+        cHelper::employeeNeedsSelectPlace();
+        
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+        $idEmployee = auth('employee')->user()->emp_id;
+
+        $employeePlace = $this->epRepository->get($idEmployee, $idPlace);
+        abort_if(empty($employeePlace), 404);
+
+        return $employeePlace;
+    }
 }
