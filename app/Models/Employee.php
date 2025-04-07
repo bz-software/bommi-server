@@ -126,12 +126,6 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
         $this->emp_remember_token = $value;
     }
 
-    public static function setPlaceLogged($idPlace){
-        $employeeModel = Employee::find(auth('employee')->user()->emp_id);
-        $employeeModel->emp_place_id_logged = $idPlace;
-        return $employeeModel->save();
-    }
-
     public static function setType($employee, $idPlace = null){
         $employee['emp_type'] = null;
         $employee['emp_type_name'] = null;

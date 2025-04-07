@@ -79,6 +79,17 @@ class EmployeeRepository
         throw new RepositoryException("Falha interna ao salvar foto de perfil", 500);
     }
 
+    public function setPlaceLogged($idPlace){
+        $model = $this->model::find(auth('employee')->user()->emp_id);
+        $model->emp_place_id_logged = $idPlace;
+
+        if(!$model->save()){
+            throw new RepositoryException("Falha interna ao setar estabelecimento logado.", 500);
+        }
+        
+        return $model->save();
+    }
+
     public function getByEmail($email){
         return $this->model::where('emp_email', $email)->where('emp_deleted', false)->first();
     }

@@ -24,7 +24,7 @@ class Place extends Model {
         "pla_category_id",
         "pla_cnpj",
         "pla_has_cnpj",
-        "pla_avatar_url"
+        "pla_avatar"
     ];
 
     public static function rules():array {
