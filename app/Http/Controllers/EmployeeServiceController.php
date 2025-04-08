@@ -26,17 +26,7 @@ class EmployeeServiceController extends Controller
     }
 
     public function list(){
-        cHelper::employeeNeedsSelectPlace();
-        
-        $idEmployee = auth('employee')->user()->emp_id;
-        $idPlace = auth('employee')->user()->emp_place_id_logged;
-
-        $employeePlace = EmployeePlace::get($idEmployee, $idPlace);
-        abort_if(!$employeePlace, 400);
-
-        $employeeServices = EmployeeService::getAll($employeePlace->ep_id, EmployeeService::$ALL_RELATIONS);
-
-        return response()->json(['employeeServices' => $employeeServices], 200);
+        return EmployeeServiceResource::collection($this->service->list());
     }
 
     public function delete($id){

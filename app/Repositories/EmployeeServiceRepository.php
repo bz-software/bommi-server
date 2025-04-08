@@ -36,5 +36,13 @@ class EmployeeServiceRepository
             ->where('emse_deleted', 0)
             ->first();
     }
+
+    public function getAll($idEmployeePlace, $with = [])
+    {
+        return $this->model::with($with)
+            ->where('emse_ep_id', $idEmployeePlace)
+            ->where('emse_deleted', 0)
+            ->get();
+    }
 }
 

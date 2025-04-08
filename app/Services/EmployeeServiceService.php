@@ -59,4 +59,21 @@ class EmployeeServiceService
 
         return $this->repository->getById($employeeService->emse_id, EmployeeServiceModel::$WITH_CATEGORY_AND_SERVICE);
     }
+
+    public function list(){
+        cHelper::employeeNeedsSelectPlace();
+        
+        $idEmployee = auth('employee')->user()->emp_id;
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+
+        /** @var EmployeePlaceRepository $ep */
+        $ep = app(EmployeePlaceRepository::class);
+
+        $employeePlace = $ep->get($idEmployee, $idPlace);
+        if(empty($employeePlace)){
+            throw new ServiceException([], 400, "Funcionário não existe no estabelecimento informado.");
+        }
+
+        return $this->repository->getAll($employeePlace->ep_id, EmployeeServiceModel::$WITH_CATEGORY_AND_SERVICE);
+    }
 }
