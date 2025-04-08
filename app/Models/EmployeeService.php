@@ -23,9 +23,13 @@ class EmployeeService extends Model {
     
     const REQUIRED_MSG = 'Campo obrigatório';
 
-    static $ALL_RELATIONS = [
+    static $WITH_ALL = [
         'servicePlace.categoryService',
         'employeePlace.employee'
+    ];
+
+    static $WITH_CATEGORY_AND_SERVICE = [
+        'servicePlace.categoryService'
     ];
 
     /**
@@ -75,28 +79,12 @@ class EmployeeService extends Model {
         ];
     }
 
-    public static function getById($id, $with = [])
-    {
-        return EmployeeService::with($with)
-            ->where('emse_id', $id)
-            ->where('emse_deleted', 0)
-            ->first();
-    }
-
     public static function getAll($idEmployeePlace, $with = [])
     {
         return EmployeeService::with($with)
             ->where('emse_ep_id', $idEmployeePlace)
             ->where('emse_deleted', 0)
             ->get();
-    }
-
-    public static function getByEmployeePlaceAndIdService($idEmployeePlace, $idService, $with = []){
-        return EmployeeService::with($with)
-            ->where('emse_ep_id', $idEmployeePlace)
-            ->where('emse_sepl_id', $idService)
-            ->where('emse_deleted', 0)
-            ->first();
     }
 
     public function employeePlace(): BelongsTo

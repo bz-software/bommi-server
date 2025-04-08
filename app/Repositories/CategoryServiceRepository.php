@@ -39,7 +39,7 @@ class CategoryServiceRepository
     public function getByNameAndPlace($idPlace, $name, $idExcept = null){
         $name = strtolower($name);
 
-        $data = CategoryServiceModel::select("*")
+        $data = $this->model::select("*")
             ->whereRaw('LOWER(case_name) = ?', [$name])
             ->where('case_place_id', $idPlace)
             ->where('case_deleted', false)
@@ -52,23 +52,23 @@ class CategoryServiceRepository
     }
 
     public function getByPlace($idPlace){
-        return CategoryServiceModel::select("*")
+        return $this->model::select("*")
             ->where('case_place_id', '=', $idPlace)
             ->where('case_deleted', '=', false)
         ->get();
     }
 
     public function getById($id){
-        return CategoryServiceModel::select("*")
+        return $this->model::select("*")
             ->where('case_id', '=', $id)
             ->where('case_deleted', '=', false)
         ->get();
     }
 
     public function getByIdAndPlace($id, $idPlace){
-        return CategoryServiceModel::select("*")
+        return $this->model::select("*")
             ->where('case_id', '=', $id)
-            ->where('case_place_id', $idPlace)
+            ->where('case_place_id', '=', $idPlace)
             ->where('case_deleted', '=', false)
         ->first();
     }
