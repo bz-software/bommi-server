@@ -4,6 +4,7 @@ namespace App\Repositories;
 use App\DTOs\EmployeeServiceDTO;
 use App\Exceptions\RepositoryException;
 use App\Models\EmployeeService as Model;
+use Carbon\Carbon;
 
 class EmployeeServiceRepository
 {
@@ -27,6 +28,20 @@ class EmployeeServiceRepository
         }
         
         return $this->model->find($model->emse_id);
+    }
+
+    public function destroy($id){
+        $now = Carbon::now();
+
+        $model = $this->model->find($id);
+        $model->emse_deleted = 1;
+        $model->emse_deleted_at = $now->toDateTimeString();
+
+        if(!$model->save()){
+            throw new RepositoryException("Falha interna ao excluir serviço do funcionário", 500);
+        }
+
+        return true;
     }
 
     public function getById($id, $with = [])

@@ -30,38 +30,7 @@ class EmployeeServiceController extends Controller
     }
 
     public function delete($id){
-        $now = Carbon::now();
-        cHelper::employeeNeedsSelectPlace();
-        abort_if(!$id, 400);
-
-        $idEmployee = auth('employee')->user()->emp_id;
-        $idPlace = auth('employee')->user()->emp_place_id_logged;
-
-        $employeePlace = EmployeePlace::get($idEmployee, $idPlace);
-        abort_if(!$employeePlace, 400);
-
-        $data = EmployeeService::findOrFail($id);
-
-        $service = ServicePlace::getById($data['emse_sepl_id']);
-        abort_if(!$service, 400);
-
-        $category = CategoryService::getByIdAndPlace($service['sepl_case_id'], $idPlace);
-        abort_if(!$category, 400);
-
-        // same employee and place
-        if($data['emse_ep_id'] == $employeePlace['ep_id'] && $category['case_place_id'] == $employeePlace['ep_place_id']){
-            $data['emse_deleted'] = 1;
-            $data['emse_deleted_at'] = $now->toDateTimeString();
-
-            if(!$data->update()){
-                abort(500);
-            }
-
-            return response()->json([], 200);
-        }else{
-            abort(400);
-        }
-
+        return $this->service->destroy($id);
     }
 
     
