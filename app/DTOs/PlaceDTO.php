@@ -50,7 +50,7 @@ class PlaceDTO extends AbstractDTO
             $request->input('idCategory') ?? null,
             $request->input('cnpj') ?? null,
             $request->input('hasCnpj') ?? null,
-            $request->input('avatarUrl') ?? 'default.png'
+            $request->input('avatar') ?? 'default.png'
         );
     }
 }
