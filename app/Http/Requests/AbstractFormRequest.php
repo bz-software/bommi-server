@@ -12,16 +12,16 @@ class AbstractFormRequest extends FormRequest
     
     public function failedValidation(Validator $validator)
     {
-        // Manipula os erros para transformar no formato desejado
+        // Pega os erros da validação
         $errors = (new ValidationException($validator))->errors();
 
-        // Reformata os erros para que os valores sejam strings e não arrays
+        // Reformata os erros para estrutura aninhada
         $formattedErrors = [];
+
         foreach ($errors as $field => $messages) {
-            $formattedErrors[$field] = $messages[0]; // Pegando a primeira mensagem de erro
+            data_set($formattedErrors, $field, $messages[0]); // pega só a primeira mensagem
         }
 
-        // Lança a exceção com o formato de erro customizado
         throw new HttpResponseException(
             response()->json([
                 'errors' => $formattedErrors
