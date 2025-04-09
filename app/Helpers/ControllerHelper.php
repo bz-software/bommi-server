@@ -19,14 +19,10 @@ class ControllerHelper {
 
         $place = Place::getByIdEmployee($id);
 
-        if(is_countable($place)){
-            http_response_code(300);
-            exit;
-        }else{
-            if($place === null){
-                http_response_code(206);
-                exit;
-            }
+        if (is_countable($place)) {
+            abort(300, 'Múltiplos locais encontrados');
+        } elseif ($place === null) {
+            abort(206);
         }
 
         return true;
