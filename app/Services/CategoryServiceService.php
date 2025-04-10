@@ -25,12 +25,12 @@ class CategoryServiceService {
         $dto->case_place_id = auth('employee')->user()->emp_place_id_logged;
 
         if($this->exists($dto->case_place_id, $dto->case_name, $dto->case_id)){
-            $message['case_name'] = "Categoria já cadastrada";
+            $message['name'] = "Categoria já cadastrada";
             throw new ServiceException($message, 400);
         }
 
         if(empty($this->repository->getByIdAndPlace($dto->case_id, $dto->case_place_id))){
-            $message['case_name'] = "Categoria não pertence ao estabelecimento ou não existe";
+            $message['name'] = "Categoria não pertence ao estabelecimento ou não existe";
             throw new ServiceException($message, 400);
         }
 
@@ -47,12 +47,12 @@ class CategoryServiceService {
         $id = intval($id);
 
         if(empty($id)){
-            throw new ServiceException(['case_id' => 'Campo obrigatório'], 400);
+            throw new ServiceException(['id' => 'Campo obrigatório'], 400);
         }
 
         $category = $this->repository->getByIdAndPlace($id, $idPlace);
         if(empty($category)){
-            throw new ServiceException(['case_id' => 'Categoria não pertence ao estabelecimento em uso'], 400);
+            throw new ServiceException(['id' => 'Categoria não pertence ao estabelecimento em uso'], 400);
         }
 
         $category->case_deleted = true;

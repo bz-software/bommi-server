@@ -17,7 +17,7 @@ class StoreCategoryServiceRequest extends AbstractFormRequest
 
     public function rules(): array
     {
-        $id = $this->input('category');
+        $id = $this->input('id');
 
         return [
             'name' => 'required|max:300'
@@ -25,8 +25,6 @@ class StoreCategoryServiceRequest extends AbstractFormRequest
     }
 
     public function messages():array {
-        
-
         return [
             'name' => [
                 'required' => self::REQUIRED_MSG,

@@ -22,7 +22,7 @@ class CategoryServiceController extends Controller
         return new CategoryServiceResource($this->service->create(CategoryServiceDTO::fromRequest($request)));
     }
 
-    public function update(Request $request){
+    public function update(StoreCategoryServiceRequest $request){
         cHelper::employeeNeedsSelectPlace();
         return new CategoryServiceResource($this->service->update(CategoryServiceDTO::fromRequest($request)));
     }

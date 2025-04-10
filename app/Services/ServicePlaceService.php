@@ -17,12 +17,12 @@ class ServicePlaceService {
 
         $serviceFounded = $this->repository->getByNameAndCategory($dto->sepl_case_id, $dto->sepl_name);
         if(!empty($serviceFounded)){
-            $message['sepl_name'] = "Serviço já cadastrado";
+            $message['name'] = "Serviço já cadastrado";
             throw new ServiceException($message, 400);
         }
 
         if(empty($this->categoryRepository->getByIdAndPlace($dto->sepl_case_id, $idPlace))){
-            $message['sepl_name'] = "Categoria não pertence ao estabelecimento em uso";
+            $message['name'] = "Categoria não encontrada";
             throw new ServiceException($message, 400);
         }
 
@@ -44,7 +44,7 @@ class ServicePlaceService {
 
         $category = $this->categoryRepository->getByIdAndPlace($service['sepl_case_id'], $idPlace);
         if(empty($category)){
-            throw new ServiceException(['id' => 'Serviço não pertence à categoria do estabelecimento em uso'], 400);
+            throw new ServiceException(['id' => 'Serviço não encontrado'], 400);
         }
 
         if($this->repository->delete($id)){
@@ -56,13 +56,13 @@ class ServicePlaceService {
         $idPlace = auth('employee')->user()->emp_place_id_logged;
 
         if(empty($this->categoryRepository->getByIdAndPlace($dto->sepl_case_id, $idPlace))){
-            $message['sepl_name'] = "Categoria não pertence ao estabelecimento em uso";
+            $message['name'] = "Categoria não encontrada";
             throw new ServiceException($message, 400);
         }
 
         $service = $this->repository->getById($dto->sepl_id);
         if(empty($service)){
-            $message['sepl_name'] = "Serviço não encontrado";
+            $message['name'] = "Serviço não encontrado";
             throw new ServiceException($message, 400);
         }
 
@@ -79,5 +79,35 @@ class ServicePlaceService {
 
         return $this->repository->getAllByCategory($idCategory);
     }
+
+    public function getById($id){
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+
+        $service = $this->repository->getById($id);
+
+        /**
+         * TODO: VERIFICAR SE O SERVIÇO EXISTE NO ESTABELECIMENTO DO USUÁRIO LOGADO
+         * criar metodo exists no repository
+         * Passar para o orm
+         * SELECT sp.* FROM services_places sp
+         *   INNER JOIN categories_services cs ON cs.case_id = sp.sepl_case_id
+         *   INNER JOIN places p ON cs.case_place_id = p.pla_id
+         *   WHERE sp.sepl_id = 21
+         *   AND p.pla_id = 31;
+         */
+
+        if(empty($service)){
+            $message['name'] = "Serviço não encontrado";
+            throw new ServiceException($message, 400);
+        }
+
+        if(empty($this->categoryRepository->getByIdAndPlace($service->sepl_case_id, $idPlace))){
+            $message['name'] = "Serviço não encontrado";
+            throw new ServiceException($message, 400);
+        }
+
+        return $service;
+    }
+
 }
 
