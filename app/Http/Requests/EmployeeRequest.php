@@ -47,7 +47,7 @@ class EmployeeRequest extends AbstractFormRequest
                 $isUpdate ? 'nullable' : 'required',
                 Rule::in(EmployeeType::values())
             ],
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg|dimensions:min_width=100,min_height=100|max:2048'
+            'uploadedAvatar' => 'nullable|image|mimes:jpeg,png,jpg|dimensions:min_width=100,min_height=100|max:2048'
         ];
     }
 

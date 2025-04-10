@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DTOs\CreateEmployeeDTO;
 use App\DTOs\EmployeePlaceAttendanceDTO;
+use App\Http\Requests\CreateEmployeeRequest;
 use App\Http\Requests\EmployeeRequest;
 use App\Http\Requests\EmployeeByCpfRequest;
 use App\Http\Requests\EmployeePlaceRequest;
@@ -23,7 +24,7 @@ class EmployeeController extends Controller
         return new EmployeeResource($this->service->byCpf($request->query('cpf')));
     }
 
-    public function create(EmployeeRequest $request){
+    public function create(CreateEmployeeRequest $request){
         return new EmployeeResource($this->service->create(CreateEmployeeDTO::fromRequest($request)));
     }
 

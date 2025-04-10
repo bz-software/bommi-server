@@ -70,7 +70,7 @@ class EmployeeService
 
         $employeeFounded = $this->repository->getByCpf($employee->emp_cpf);
 
-        if(!empty($exist)){
+        if(!empty($employeeFounded)){
             if($this->epRepository->exist($employeeFounded->emp_id, $idPlace)){
                 throw new ServiceException(['cpf' => "Funcionário já cadastrado nesse estabelecimento"], 400);
             }else{
