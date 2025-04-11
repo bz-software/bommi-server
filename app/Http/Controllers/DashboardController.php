@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\Category;
-use App\Enums\EmployeeType;
 use Illuminate\Http\Request;
 use App\Helpers\ControllerHelper as cHelper;
-use App\Models\Employee;
 use App\Models\Place;
 
 class DashboardController extends Controller

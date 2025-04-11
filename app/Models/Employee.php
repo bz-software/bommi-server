@@ -126,33 +126,6 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
         $this->emp_remember_token = $value;
     }
 
-    public static function setPlaceLogged($idPlace){
-        $employeeModel = Employee::find(auth('employee')->user()->emp_id);
-        $employeeModel->emp_place_id_logged = $idPlace;
-        return $employeeModel->save();
-    }
-
-    public static function getByCpf($cpf, $idExcept = null){
-        $employee = Employee::select('*')
-            ->where('emp_cpf', '=', $cpf)
-            ->where('emp_deleted', '=', false)
-            ->when($idExcept !== null, function ($query) use ($idExcept) {
-                $query->where('emp_id', '!=', $idExcept);
-            })
-        ->first();
-        
-        return $employee;
-    }
-
-    public static function getById($id, $idPlace = null){
-        $employee = Employee::select('*')
-            ->where('emp_deleted', '=', false)
-            ->where('emp_id', '=', $id)
-            ->first();
-
-        return self::setType($employee, $idPlace);
-    }
-
     public static function setType($employee, $idPlace = null){
         $employee['emp_type'] = null;
         $employee['emp_type_name'] = null;
@@ -175,36 +148,6 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
         }
         
         return $employee;
-    }
-
-    public static function getAllActiveByPlace($idPlace, $employeeExcept = null){
-        // SELECT * FROM employees e
-        // INNER JOIN employees_place ep ON ep.ep_employee_id = e.emp_id
-        // WHERE ep.ep_place_id = 7
-        // AND e.emp_deleted = false
-
-        if(intval($employeeExcept) > 0){
-            $employees = Employee::select('*')
-                ->join('employees_place', 'employees_place.ep_employee_id', '=', 'employees.emp_id')
-                ->where('employees_place.ep_place_id', '=', $idPlace)
-                ->where('employees.emp_deleted', '=', 0)
-                ->where('employees.emp_id', '!=', $employeeExcept)
-                ->where('employees_place.ep_deleted', '=', false)
-                ->get();
-        }else{
-            $employees = Employee::select('*')
-                ->join('employees_place', 'employees_place.ep_employee_id', '=', 'employees.emp_id')
-                ->where('employees_place.ep_place_id', '=', $idPlace)
-                ->where('employees.emp_deleted', '=', 0)
-                ->where('employees_place.ep_deleted', '=', false)
-                ->get();
-        }
-
-        foreach($employees as $i => $employee){
-            $employees[$i] = self::setType($employee, $idPlace);
-        }
-
-        return $employees;
     }
 
     /**

@@ -23,9 +23,13 @@ class EmployeeService extends Model {
     
     const REQUIRED_MSG = 'Campo obrigatório';
 
-    static $ALL_RELATIONS = [
+    static $WITH_ALL = [
         'servicePlace.categoryService',
         'employeePlace.employee'
+    ];
+
+    static $WITH_CATEGORY_AND_SERVICE = [
+        'servicePlace.categoryService'
     ];
 
     /**
@@ -47,57 +51,6 @@ class EmployeeService extends Model {
         "emse_deleted",
         "emse_deleted_at"
     ];
-
-    public static function rules():array {
-        return [
-            'emse_sepl_id' => [
-                'required',
-                'exists:services_places,sepl_id,sepl_deleted,0'
-            ],
-            'emse_ep_id' => [
-                'required',
-                'exists:employees_place,ep_id,ep_deleted,0',
-            ],
-        ];
-    }
-
-    public static function messages():array {
-        return [
-            'emse_sepl_id' => [
-                'required' => self::REQUIRED_MSG,
-                'exists' => "Serviço não encontrado"
-            ],
-
-            'emse_ep_id' => [
-                'required' => self::REQUIRED_MSG,
-                'exists' => 'Funcionário não encontrado'
-            ]
-        ];
-    }
-
-    public static function getById($id, $with = [])
-    {
-        return EmployeeService::with($with)
-            ->where('emse_id', $id)
-            ->where('emse_deleted', 0)
-            ->first();
-    }
-
-    public static function getAll($idEmployeePlace, $with = [])
-    {
-        return EmployeeService::with($with)
-            ->where('emse_ep_id', $idEmployeePlace)
-            ->where('emse_deleted', 0)
-            ->get();
-    }
-
-    public static function getByEmployeePlaceAndIdService($idEmployeePlace, $idService, $with = []){
-        return EmployeeService::with($with)
-            ->where('emse_ep_id', $idEmployeePlace)
-            ->where('emse_sepl_id', $idService)
-            ->where('emse_deleted', 0)
-            ->first();
-    }
 
     public function employeePlace(): BelongsTo
     {
