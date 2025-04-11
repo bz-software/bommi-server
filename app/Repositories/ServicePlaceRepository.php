@@ -33,11 +33,16 @@ class ServicePlaceRepository
         return $data;
     }
 
-    public function getByNameAndCategory($idCategory, $name){
+    public function getByNameAndCategory($idCategory, $name, $idExcept = null){
         $data = $this->model->select("*")
+            ->join('categories_services as cs', 'cs.case_id', '=', 'services_places.sepl_case_id')
             ->whereRaw('LOWER(sepl_name) = ?', [$name])
+            ->where('cs.case_deleted', 0)
             ->where('sepl_case_id', $idCategory)
             ->where('sepl_deleted', false)
+            ->when($idExcept !== null, function ($query) use ($idExcept) {
+                $query->where('sepl_id', '!=', $idExcept);
+            })
         ->first();
 
         return $data;
@@ -50,6 +55,18 @@ class ServicePlaceRepository
         ->first();
 
         return $data;
+    }
+
+    public function getByIdAndPlace($id, $idPlace){
+        return $this->model->select('*')
+            ->join('categories_services as cs', 'cs.case_id', '=', 'services_places.sepl_case_id')
+            ->join('places as p', 'cs.case_place_id', '=', 'p.pla_id')
+            ->where('services_places.sepl_id', $id)
+            ->where('p.pla_id', $idPlace)
+            ->where('cs.case_deleted', 0)
+            ->where('p.pla_deleted', 0)
+            ->where('services_places.sepl_deleted', 0)
+            ->first();
     }
 
     public function delete($id){
