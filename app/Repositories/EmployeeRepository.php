@@ -54,7 +54,7 @@ class EmployeeRepository
         $model->emp_cpf = $dto->emp_cpf;
         $model->emp_birthdate = Carbon::parse($dto->emp_birthdate)->translatedFormat('Y-m-d');
 
-        $nameFile = $this->storeAvatar($dto->avatar, $dto->emp_id);
+        $nameFile = $this->storeAvatar($dto->uploadedAvatar, $dto->emp_id);
         $model->emp_avatar = !empty($nameFile) ? $nameFile : $model->emp_avatar;
 
         if(!$model->save()){

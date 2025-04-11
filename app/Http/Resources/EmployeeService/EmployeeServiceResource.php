@@ -19,6 +19,7 @@ class EmployeeServiceResource extends JsonResource
         return [
             'id' => $this->emse_id ?? null,
             'idEmployeePlace' => $this->emse_ep_id ?? null,
+            'idService' => $this->emse_sepl_id ?? null,
             'service' => new ServicePlaceWithCategoryResource($this->servicePlace) ?? null
         ];
     }

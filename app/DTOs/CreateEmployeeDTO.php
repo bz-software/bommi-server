@@ -16,7 +16,7 @@ class CreateEmployeeDTO extends AbstractDTO
     public $emp_birthdate;
     public $emp_cpf;
     public $emp_type;
-    public ?UploadedFile $avatar = null;
+    public ?UploadedFile $uploadedAvatar = null;
 
     /**
      * CreateEmployeeDTO constructor.
@@ -52,7 +52,7 @@ class CreateEmployeeDTO extends AbstractDTO
         $this->emp_birthdate = $birthdate;
         $this->emp_cpf = $cpf;
         $this->emp_type = $type;
-        $this->avatar = $avatar;
+        $this->uploadedAvatar = $avatar;
     }
 
     /**
@@ -73,7 +73,7 @@ class CreateEmployeeDTO extends AbstractDTO
             $request->input('birthdate') ?? null,
             $request->input('cpf') ?? null,
             $request->input('type') ?? null,
-            $request->file('avatar') ?? null
+            $request->file('uploadedAvatar') ?? null
         );
     }
 }
