@@ -47,5 +47,12 @@ class PlaceRepository
             throw new RepositoryException("Falha ao cadastrar estabelecimento: ".$e->getMessage(), 500);
         }
     }
+
+    public function getBySlug($slug, $with = []){
+        return $this->model::with($with)
+        ->where('pla_slug_name', $slug)
+        ->where('pla_deleted', 0)
+        ->get();
+    }
 }
 

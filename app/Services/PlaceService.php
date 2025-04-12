@@ -19,5 +19,13 @@ class PlaceService {
     public function getCategories(){
         return $this->cpRepository->list();
     }
+
+    public function existBySlug($slug){
+        if(!empty($this->repository->getBySlug($slug))){
+            return response()->noContent(200);
+        }else{
+            return response()->noContent(404);
+        }
+    }
 }
 
