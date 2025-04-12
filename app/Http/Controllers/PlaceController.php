@@ -21,6 +21,6 @@ class PlaceController extends Controller
     }
 
     public function existBySlug($slug){
-        return CategoryPlaceResource::collection($this->service->existBySlug($slug));
+        return $this->service->existBySlug($slug);
     }
 }

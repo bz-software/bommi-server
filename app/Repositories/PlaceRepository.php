@@ -52,7 +52,7 @@ class PlaceRepository
         return $this->model::with($with)
         ->where('pla_slug_name', $slug)
         ->where('pla_deleted', 0)
-        ->get();
+        ->first();
     }
 }
 
