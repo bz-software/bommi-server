@@ -9,12 +9,15 @@ use App\Exceptions\RepositoryException;
 use App\Models\EmployeePlace;
 use App\Models\PlaceAddress;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PlaceRepository
 {
     public function __construct(private Model $model, private PlaceAddress $paModel ) {}
 
     public function create(PlaceDTO $place, CreatePlaceAddressDTO $address){
+        $place->pla_slug_name = Str::slug($place->pla_name);
+
         try {
             DB::beginTransaction();
                 $placeSave = new $this->model($place->toArray());
