@@ -7,6 +7,7 @@ use App\Exceptions\ServiceException;
 use App\Models\CategoryPlace;
 use App\Repositories\CategoryPlaceRepository;
 use App\Repositories\PlaceRepository;
+use App\Models\Place as Model;
 
 class PlaceService {
     public function __construct(private PlaceRepository $repository, private CategoryPlaceRepository $cpRepository) {}
@@ -26,6 +27,10 @@ class PlaceService {
         }else{
             return response()->noContent(404);
         }
+    }
+
+    public function bySlug($slug){
+        return $this->repository->getBySlug($slug, Model::$WITH_ALL);
     }
 }
 

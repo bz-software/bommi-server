@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\EmployeePlace
@@ -19,11 +20,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $ep_clock_out
  */
 class EmployeePlace extends Model {
+    use SoftDeletes;
 
     protected $primaryKey = "ep_id";
 
     const CREATED_AT = NULL;
     const UPDATED_AT = NULL;
+    const DELETED_AT = 'ep_deleted_at';
     
     /**
      * The table associated with the model.

@@ -16,8 +16,6 @@ class PlaceRepository
     public function __construct(private Model $model, private PlaceAddress $paModel ) {}
 
     public function create(PlaceDTO $place, CreatePlaceAddressDTO $address){
-        $place->pla_slug_name = Str::slug($place->pla_name);
-
         try {
             DB::beginTransaction();
                 $placeSave = new $this->model($place->toArray());
@@ -38,6 +36,10 @@ class PlaceRepository
                 }else{
                     throw new RepositoryException("Erro interno", 500);
                 }
+
+                $slugName = Str::slug($place->pla_name);
+                $placeSave->pla_slug_name = !empty($this->getBySlug($slugName)) ? $slugName.'-'.$placeSave->pla_id : $slugName;
+                $placeSave->save();
 
             DB::commit();
 

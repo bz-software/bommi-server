@@ -4,14 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Place extends Model {
+    use SoftDeletes;
+
     const CREATED_AT = 'pla_created_at';
     const UPDATED_AT = 'pla_changed_at';
+    const DELETED_AT = 'pla_deleted_at';
 
     protected $primaryKey = "pla_id";
 
     const REQUIRED_MSG = 'Campo obrigatório';
+
+    static $WITH_ALL = [
+        'address',
+        'categories.services',
+        'employeePlaces.employee', // Relacionamento com funcionários
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -103,5 +113,14 @@ class Place extends Model {
     public function address(): HasOne
     {
         return $this->hasOne(PlaceAddress::class, 'plad_place_id');
+    }
+
+    public function employeePlaces()
+    {
+        return $this->hasMany(EmployeePlace::class, 'ep_place_id');
+    }
+
+    public function categories(){
+        return $this->hasMany(CategoryService::class, 'case_place_id');
     }
 }

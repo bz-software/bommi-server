@@ -10,14 +10,16 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Employee extends Model implements AuthenticatableContract, JWTSubject
 {
     
-    use HasApiTokens, HasFactory, Notifiable, Authenticatable; 
+    use HasApiTokens, HasFactory, Notifiable, Authenticatable, SoftDeletes; 
 
     const CREATED_AT = 'emp_created_at';
     const UPDATED_AT = 'emp_updated_at';
+    const DELETED_AT = 'emp_deleted_at';
 
     protected $primaryKey = "emp_id";
 

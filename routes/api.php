@@ -72,7 +72,11 @@ Route::put('/admin/place/service', [ServicePlaceController::class, 'update'])->m
 //Place
 Route::get('/admin/place/categories', [PlaceController::class, 'categories'])->middleware('auth:employee');
 Route::post('/admin/place', [PlaceController::class, 'create'])->middleware('auth:employee');
+
+
+// ==== PUBLICS ====
 Route::get('/place/exist-by-slug/{slug}', [PlaceController::class, 'existBySlug']);
+Route::get('/place/slug/{slug}', [PlaceController::class, 'getAllBySlug']);
 // ============================================================================================================
 
 

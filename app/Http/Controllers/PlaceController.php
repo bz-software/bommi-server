@@ -23,4 +23,8 @@ class PlaceController extends Controller
     public function existBySlug($slug){
         return $this->service->existBySlug($slug);
     }
+
+    public function getAllBySlug($slug){
+        return $this->service->bySlug($slug);
+    }
 }
