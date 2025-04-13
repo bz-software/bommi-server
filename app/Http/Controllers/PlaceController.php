@@ -6,6 +6,7 @@ use App\DTOs\CreatePlaceAddressDTO;
 use App\DTOs\PlaceDTO;
 use App\Http\Requests\CreatePlaceRequest;
 use App\Http\Resources\CategoryPlace\CategoryPlaceResource;
+use App\Http\Resources\Place\PlaceAllRelationsResource;
 use App\Services\PlaceService as Service;
 
 class PlaceController extends Controller
@@ -25,6 +26,6 @@ class PlaceController extends Controller
     }
 
     public function getAllBySlug($slug){
-        return $this->service->bySlug($slug);
+        return new PlaceAllRelationsResource($this->service->bySlug($slug));
     }
 }
