@@ -18,9 +18,10 @@ class Place extends Model {
     const REQUIRED_MSG = 'Campo obrigatório';
 
     static $WITH_ALL = [
+        'categoryPlace',
         'address',
         'categories.services',
-        'employeePlaces.employee', // Relacionamento com funcionários
+        'employeePlaces.employee',
     ];
 
     /**
@@ -113,6 +114,11 @@ class Place extends Model {
     public function address(): HasOne
     {
         return $this->hasOne(PlaceAddress::class, 'plad_place_id');
+    }
+
+    public function categoryPlace()
+    {
+        return $this->belongsTo(CategoryPlace::class, 'pla_category_id', 'capl_id');
     }
 
     public function employeePlaces()
