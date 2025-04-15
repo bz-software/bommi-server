@@ -76,7 +76,7 @@ Route::post('/admin/place', [PlaceController::class, 'create'])->middleware('aut
 
 // ==== PUBLICS ====
 Route::get('/place/exist-by-slug/{slug}', [PlaceController::class, 'existBySlug']);
-Route::get('/place/slug/{slug}', [PlaceController::class, 'getAllBySlug']);
+Route::get('/place/data-by-slug/{slug}', [PlaceController::class, 'getAllBySlug']);
 // ============================================================================================================
 
 
