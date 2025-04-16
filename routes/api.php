@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthEmployeeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
@@ -77,6 +78,7 @@ Route::post('/admin/place', [PlaceController::class, 'create'])->middleware('aut
 // ==== PUBLICS ====
 Route::get('/place/exist-by-slug/{slug}', [PlaceController::class, 'existBySlug']);
 Route::get('/place/data-by-slug/{slug}', [PlaceController::class, 'getAllBySlug']);
+Route::post('/place/appointments/availability', [AppointmentController::class, 'availability']);
 // ============================================================================================================
 
 
