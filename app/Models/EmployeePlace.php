@@ -83,4 +83,14 @@ class EmployeePlace extends Model {
     {
         return $this->belongsTo(Employee::class, 'ep_employee_id', 'emp_id');
     }
+
+    public function employeeService()
+    {
+        return $this->hasMany(EmployeeService::class, 'emse_ep_id', 'ep_id');
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'apmt_ep_id', 'ep_id');
+    }
 }
