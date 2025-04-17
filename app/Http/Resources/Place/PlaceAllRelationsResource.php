@@ -32,7 +32,8 @@ class PlaceAllRelationsResource extends JsonResource
             "categoryPlace" => new CategoryPlaceResource($this->categoryPlace) ?? null,
             "address" => new PlaceAddressResource($this->address) ?? null,
             "categories" => CategoryServiceWithServicesResource::collection($this->categories) ?? null,
-            "employees" => EmployeePlaceWithEmployeeResource::collection($this->employeePlaces) ?? null
+            "employees" => EmployeePlaceWithEmployeeResource::collection($this->employeePlaces) ?? null,
+            "avaliableDates" => $this->avaliableDates
         ];
     }
 }

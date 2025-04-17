@@ -8,9 +8,14 @@ use App\Models\CategoryPlace;
 use App\Repositories\CategoryPlaceRepository;
 use App\Repositories\PlaceRepository;
 use App\Models\Place as Model;
+use App\Services\AppointmentService as AppoService;
 
 class PlaceService {
-    public function __construct(private PlaceRepository $repository, private CategoryPlaceRepository $cpRepository) {}
+    public function __construct(
+        private PlaceRepository $repository, 
+        private CategoryPlaceRepository $cpRepository,
+        private AppoService $appoService
+    ) {}
 
     public function create(PlaceDTO $place, CreatePlaceAddressDTO $address){
         $this->repository->create($place, $address);
@@ -30,7 +35,12 @@ class PlaceService {
     }
 
     public function bySlug($slug){
-        return $this->repository->getBySlug($slug, Model::$WITH_ALL);
+        $model = $this->repository->getBySlug($slug, Model::$WITH_ALL);
+        if(!empty($model)){
+            $model['avaliableDates'] = $this->appoService->getAvaliableDates();
+        }
+
+        return $model;
     }
 }
 

@@ -19,6 +19,19 @@ class AppointmentService {
         private AppointmentRepository $apRepository
     ) {}
 
+    public function getAvaliableDates()
+    {
+        $dates = collect();
+
+        $startDate = Carbon::today();
+
+        for ($i = 0; $i <= Appointment::DAYS_SCHEDULE_OPEN; $i++) {
+            $dates->push($startDate->copy()->addDays($i)->format('Y-m-d'));
+        }
+
+        return $dates;
+    }
+
     public function getAvailability(AppointmentDTO $dto){
         $this->verifyServicesExist($dto->apmt_pla_id, $dto->appointmentServices);
 
