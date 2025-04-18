@@ -75,8 +75,8 @@ class AppointmentService {
     
         // If there are available time slots, return them
         if (!empty($uniqueTimes)) {
-            $avaliableDates[] = [
-                'date' => $date,
+            $avaliableDates = [
+                'date' => $date->format('Y-m-d'),
                 'times' => $uniqueTimes
             ];
         }
