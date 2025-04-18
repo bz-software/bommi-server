@@ -25,5 +25,11 @@ class AppointmentRepository
 
         return false;
     }
+
+    public function byDate($idEmployeePlace, $date){
+        return $this->model::where('apmt_ep_id', $idEmployeePlace)
+        ->whereDate('apmt_date', $date)
+        ->get();
+    }
 }
 

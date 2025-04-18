@@ -10,6 +10,7 @@ class AppointmentDTO extends AbstractDTO
     public $cli_name;
     public $cli_phone_number;
     public $appointmentServices;
+    public $date;
 
     /**
      * AppointmentDTO constructor.
@@ -18,13 +19,15 @@ class AppointmentDTO extends AbstractDTO
      * @param string $name
      * @param string $phoneNumber
      * @param array $services
+     * @param string $date
      */
-    public function __construct($idPlace, $name, $phoneNumber, array $services)
+    public function __construct($idPlace, $name, $phoneNumber, array $services, $date)
     {
         $this->apmt_pla_id = $idPlace;
         $this->cli_name = $name;
         $this->cli_phone_number = $phoneNumber;
         $this->appointmentServices = $services;
+        $this->date = $date;
     }
 
     /**
@@ -39,7 +42,8 @@ class AppointmentDTO extends AbstractDTO
             $request->input('idPlace') ?? null,
             $request->input('name') ?? null,
             $request->input('phoneNumber') ?? null,
-            $request->input('services') ?? []
+            $request->input('services') ?? [],
+            $request->input('date') ?? null
         );
     }
 }
