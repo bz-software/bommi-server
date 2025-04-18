@@ -14,6 +14,7 @@ class AppointmentService extends Model
     public $timestamps = false;
 
     const DELETED_AT = 'apse_deleted_at';
+    const UPDATED_AT = null;
 
     protected $fillable = [
         'apse_apmt_id',

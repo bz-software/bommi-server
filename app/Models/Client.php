@@ -11,6 +11,7 @@ class Client extends Model
     public $timestamps = true; 
 
     const CREATED_AT = 'cli_created_at';
+    const UPDATED_AT = null;
 
     protected $fillable = [
         'cli_name',

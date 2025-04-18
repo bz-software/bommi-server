@@ -13,4 +13,8 @@ class AppointmentController extends Controller
     public function availability(AvailabilityRequest $request){
         return $this->service->getAvailability(AppointmentDTO::fromRequest($request));
     }
+
+    public function book(AvailabilityRequest $request){
+        return $this->service->book(AppointmentDTO::fromRequest($request));
+    }
 }

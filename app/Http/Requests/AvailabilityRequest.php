@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Http\Requests\AbstractFormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Contracts\Validation\Validator;
 
 class AvailabilityRequest extends AbstractFormRequest
 {
@@ -33,8 +34,18 @@ class AvailabilityRequest extends AbstractFormRequest
                 }),
             ],
 
-            'services.*.note' => 'nullable|string|max:250'
+            'services.*.note' => 'nullable|string|max:250',
+
+            'date' => 'nullable|date_format:Y-m-d',
+            'hour' => 'nullable|date_format:H:i',
         ];
+    }
+
+    public function withValidator(Validator $validator)
+    {
+        $validator->sometimes(['date', 'hour'], 'required', function () {
+            return $this->is('*/place/appointments/book');
+        });
     }
 
     public function messages(): array

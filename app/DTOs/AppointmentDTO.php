@@ -7,10 +7,20 @@ use Illuminate\Http\Request;
 class AppointmentDTO extends AbstractDTO
 {
     public $apmt_pla_id;
+    public $apmt_ep_id;
+    public $apmt_cli_id;
+    public $apmt_status;
+    public $apmt_date;
+    public $apmt_total_time;
+    public $apmt_total_value;
+
+    
+    // off model
     public $cli_name;
     public $cli_phone_number;
     public $appointmentServices;
     public $date;
+    public $hour;
 
     /**
      * AppointmentDTO constructor.
@@ -20,14 +30,35 @@ class AppointmentDTO extends AbstractDTO
      * @param string $phoneNumber
      * @param array $services
      * @param string $date
+     * @param string $hour
      */
-    public function __construct($idPlace, $name, $phoneNumber, array $services, $date)
+    public function __construct(
+        $idPlace, 
+        $name, 
+        $phoneNumber, 
+        array $services, 
+        $date, 
+        $hour,
+
+        $idEmployee, 
+        $idClient,
+        $status,
+        $totalTime,
+        $totalValue
+    )
     {
         $this->apmt_pla_id = $idPlace;
         $this->cli_name = $name;
         $this->cli_phone_number = $phoneNumber;
         $this->appointmentServices = $services;
         $this->date = $date;
+        $this->hour = $hour;
+        
+        $this->apmt_ep_id = $idEmployee;
+        $this->apmt_cli_id = $idClient;
+        $this->apmt_status = $status;
+        $this->apmt_total_time = $totalTime;
+        $this->apmt_total_value = $totalValue;
     }
 
     /**
@@ -43,7 +74,13 @@ class AppointmentDTO extends AbstractDTO
             $request->input('name') ?? null,
             $request->input('phoneNumber') ?? null,
             $request->input('services') ?? [],
-            $request->input('date') ?? null
+            $request->input('date') ?? null,
+            $request->input('hour') ?? null,
+            null,
+            null,
+            null,
+            null,
+            null
         );
     }
 }

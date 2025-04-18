@@ -79,6 +79,7 @@ Route::post('/admin/place', [PlaceController::class, 'create'])->middleware('aut
 Route::get('/place/exist-by-slug/{slug}', [PlaceController::class, 'existBySlug']);
 Route::get('/place/data-by-slug/{slug}', [PlaceController::class, 'getAllBySlug']);
 Route::post('/place/appointments/availability', [AppointmentController::class, 'availability']);
+Route::post('/place/appointments/book', [AppointmentController::class, 'book']);
 // ============================================================================================================
 
 

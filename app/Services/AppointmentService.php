@@ -2,21 +2,26 @@
 namespace App\Services;
 
 use App\DTOs\AppointmentDTO;
+use App\DTOs\AppointmentServiceDTO;
 use App\Exceptions\ServiceException;
 use App\Models\EmployeePlace;
 use App\Repositories\ServicePlaceRepository;
 use Carbon\Carbon;
 use App\Models\Appointment;
 use App\Repositories\AppointmentRepository;
+use App\Repositories\AppointmentServiceRepository;
+use App\Repositories\ClientRepository;
 use App\Repositories\EmployeePlaceRepository;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 
 class AppointmentService {
     public function __construct(
         private ServicePlaceRepository $spRepository,
         private EmployeePlaceRepository $epRepository,
-        private AppointmentRepository $apRepository
+        private AppointmentRepository $apRepository,
+        private ClientRepository $cRepository,
+        private AppointmentServiceRepository $apsRepository
     ) {}
 
     public function getAvaliableDates()
@@ -162,6 +167,104 @@ class AppointmentService {
         return $availableTimes;
     }
 
+    
+    public function book(AppointmentDTO $dto){
+        // Ensure all selected services exist for the given place
+        $this->verifyServicesExist($dto->apmt_pla_id, $dto->appointmentServices);
+    
+        // Extract service IDs from the DTO
+        $idsServices = array_column($dto->appointmentServices, 'id');
+
+        // Get all employees that offer the selected services at the given place
+        $employees = $this->epRepository->getByServicesPlace($idsServices);
+        
+        // Convert the input date to a Carbon instance
+        $date = Carbon::createFromFormat('Y-m-d', $dto->date);
+
+        $total = $this->spRepository->totalByIds($idsServices);
+        $totalDuration = $total->duration;
+        $totalValue = $total->value;
+
+        $avaliableEmployee = null;
+        foreach ($employees as $employee) {
+            $avaliable = $this->hasAvailableEmployee($date, $dto->hour, $totalDuration, $employee);
+
+            if($avaliable){
+                $avaliableEmployee = $employee;
+                break;
+            }else{
+                throw new ServiceException([], 400, "Horario já foi reservado, tente outro" );
+            }
+        }
+
+        try {
+            DB::beginTransaction();
+                $dto->apmt_total_time = $totalDuration;
+                $dto->apmt_total_value = $totalValue;
+                $dto->apmt_status = 0;
+                $dto->apmt_ep_id = $avaliableEmployee->ep_id;
+                $dto->apmt_date = $date->format('Y-m-d') .' '. $dto->hour;
+                
+                $client = $this->cRepository->getByPhoneNumber($dto->cli_phone_number) ?? $this->cRepository->storeFromAppointment($dto);
+                $dto->apmt_cli_id = $client['cli_id'];
+
+                $appointment = $this->apRepository->store($dto);
+                $appointmentServices = $this->storeAppointmentServices($appointment['apmt_id'], $dto->appointmentServices);
+            DB::commit();
+        } catch (\PDOException $e) {
+            DB::rollBack();
+            throw new ServiceException([], 500, "Falha ao cadastrar agendamento: ".$e->getMessage() );
+        }
+    }
+
+    public function storeAppointmentServices($idAppointment, $services){
+        foreach($services as $service){
+            $note = !empty($service['note']) ? $service['note'] : null;
+            $dto = new AppointmentServiceDTO(null, $idAppointment, $service['id'], $note, null);
+
+            if(!$this->apsRepository->store($dto)){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns the available time slots for a specific date and employee,
+     * based on the total service duration, the employee's working hours,
+     * and existing scheduled appointments.
+     *
+     * The method builds possible time slots within the employee's schedule,
+     * filters out any that conflict with existing appointments, and returns
+     * only the ones that are fully available.
+     *
+     * @param Carbon $date The date to check availability for.
+     * @param string $hour
+     * @param int $totalDuration The total duration of all selected services, in minutes.
+     * @param EmployeePlace $employee The employee to check availability for.
+     * @return bool
+     */
+    public function hasAvailableEmployee($date, $hour, $totalDuration, $employee){
+        $start = Carbon::parse($date->format('Y-m-d') . ' ' . $hour);
+        $end = $start->copy()->addMinutes($totalDuration);
+
+        $appointments = $this->apRepository->byDate($employee->ep_id, $date->format('Y-m-d'));
+
+        $conflict = $appointments->first(function ($appt) use ($start, $end) {
+            $apptStart = Carbon::parse($appt->apmt_date); // Appointment start time
+            $apptEnd = $apptStart->copy()->addMinutes($appt->apmt_total_time); // Appointment end time
+
+            return $start->lt($apptEnd) && $end->gt($apptStart);
+        });
+
+        if (!$conflict) {
+            return true;
+        }
+
+        return false;
+    }
+
 
     private function verifyServicesExist($idPlace, $services){
         foreach($services as $service){
@@ -183,15 +286,6 @@ class AppointmentService {
     {
         [$horas, $minutos] = explode(':', $tempo);
         return ((int) $horas * 60) + (int) $minutos;
-    }
-
-    private function getServicesByIds(array $ids){
-        $services = array();
-        foreach($ids as $id){
-            array_push($services, $this->spRepository->getById($id));
-        }
-
-        return $services;
     }
 }
 
