@@ -84,10 +84,11 @@ class AppointmentService {
                 'date' => $date->format('Y-m-d'),
                 'times' => $uniqueTimes
             ];
+
+            return response()->json($avaliableDates);
         }
-    
-        // Return the result as a JSON response
-        return response()->json($avaliableDates);
+
+        return response()->noContent(404);
     }
     
     /**
@@ -186,15 +187,19 @@ class AppointmentService {
         $totalValue = $total->value;
 
         $avaliableEmployee = null;
+        $valid = false;
         foreach ($employees as $employee) {
             $avaliable = $this->hasAvailableEmployee($date, $dto->hour, $totalDuration, $employee);
 
             if($avaliable){
                 $avaliableEmployee = $employee;
+                $valid = true;
                 break;
-            }else{
-                throw new ServiceException([], 400, "Horario já foi reservado, tente outro" );
             }
+        }
+
+        if(!$valid){
+            throw new ServiceException([], 400, "Horario já foi reservado, tente outro" );
         }
 
         try {
@@ -209,7 +214,7 @@ class AppointmentService {
                 $dto->apmt_cli_id = $client['cli_id'];
 
                 $appointment = $this->apRepository->store($dto);
-                $appointmentServices = $this->storeAppointmentServices($appointment['apmt_id'], $dto->appointmentServices);
+                $this->storeAppointmentServices($appointment['apmt_id'], $dto->appointmentServices);
             DB::commit();
         } catch (\PDOException $e) {
             DB::rollBack();
@@ -219,7 +224,7 @@ class AppointmentService {
 
     public function storeAppointmentServices($idAppointment, $services){
         foreach($services as $service){
-            $note = !empty($service['note']) ? $service['note'] : null;
+            $note = !empty($service['observation']) ? $service['observation'] : null;
             $dto = new AppointmentServiceDTO(null, $idAppointment, $service['id'], $note, null);
 
             if(!$this->apsRepository->store($dto)){
