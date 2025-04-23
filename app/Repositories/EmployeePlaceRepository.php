@@ -82,5 +82,11 @@ class EmployeePlaceRepository
 
         throw new RepositoryException("Não foi possível excluir o funcionário, motivo: funcionário não encontrado", 500);
     }
+
+    public function getByServicesPlace(array $ids){
+        return $this->model::whereHas('employee')
+            ->whereHas('employeeService', fn ($q) => $q->whereIn('emse_sepl_id', $ids))
+            ->get();
+    }
 }
 

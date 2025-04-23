@@ -12,6 +12,7 @@ class PlaceDTO extends AbstractDTO
     public $pla_category_id;
     public $pla_cnpj;
     public $pla_has_cnpj;
+    public $pla_slug_name;
     public $pla_avatar;
 
     /**
@@ -23,8 +24,9 @@ class PlaceDTO extends AbstractDTO
      * @param string $cnpj
      * @param int $hasCnpj
      * @param string $avatar
+     * @param string $slugName
      */
-    public function __construct($id, $name, $phoneNumber, $idCategory, $cnpj, $hasCnpj, $avatar)
+    public function __construct($id, $name, $phoneNumber, $idCategory, $cnpj, $hasCnpj, $avatar, $slugName)
     {
         $this->pla_id = $id;
         $this->pla_name = $name;
@@ -33,6 +35,7 @@ class PlaceDTO extends AbstractDTO
         $this->pla_cnpj = $cnpj;
         $this->pla_has_cnpj = $hasCnpj;
         $this->pla_avatar = $avatar;
+        $this->pla_slug_name = $slugName;
     }
 
     /**
@@ -50,7 +53,8 @@ class PlaceDTO extends AbstractDTO
             $request->input('idCategory') ?? null,
             $request->input('cnpj') ?? null,
             $request->input('hasCnpj') ?? null,
-            $request->input('avatar') ?? 'default.png'
+            $request->input('avatar') ?? 'default.png',
+            null
         );
     }
 }

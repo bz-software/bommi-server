@@ -9,6 +9,7 @@ use App\Exceptions\RepositoryException;
 use App\Models\EmployeePlace;
 use App\Models\PlaceAddress;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PlaceRepository
 {
@@ -36,6 +37,10 @@ class PlaceRepository
                     throw new RepositoryException("Erro interno", 500);
                 }
 
+                $slugName = Str::slug($place->pla_name);
+                $placeSave->pla_slug_name = !empty($this->getBySlug($slugName)) ? $slugName.'-'.$placeSave->pla_id : $slugName;
+                $placeSave->save();
+
             DB::commit();
 
             return $placeSave;
@@ -43,6 +48,13 @@ class PlaceRepository
             DB::rollBack();
             throw new RepositoryException("Falha ao cadastrar estabelecimento: ".$e->getMessage(), 500);
         }
+    }
+
+    public function getBySlug($slug, $with = []){
+        return $this->model::with($with)
+        ->where('pla_slug_name', $slug)
+        ->where('pla_deleted', 0)
+        ->first();
     }
 }
 

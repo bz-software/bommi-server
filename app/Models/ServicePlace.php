@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Symfony\Component\VarDumper\VarDumper;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ServicePlace extends Model {
+    use SoftDeletes;
+    
     const CREATED_AT = null;
     const UPDATED_AT = null;
+    const DELETED_AT = 'sepl_deleted_at';
 
     protected $primaryKey = "sepl_id";
 

@@ -57,6 +57,26 @@ class ServicePlaceRepository
         return $data;
     }
 
+    /**
+     * Calculates the total duration (in minutes) and total value of services
+     * based on the given service place IDs.
+     *
+     * The duration is stored in "HH:MM" format and converted to total minutes.
+     * The price is summed directly from the 'sepl_price' column.
+     *
+     * @param array $ids The list of service place IDs to calculate totals for.
+     * @return object An object containing 'totalDuration' and 'totalValue'.
+     */
+    public function totalByIds(array $ids)
+    {
+        return $this->model->whereIn('sepl_id', $ids)
+            ->selectRaw('
+                FLOOR(SUM(TIME_TO_SEC(sepl_duration)) / 60) AS duration,
+                SUM(sepl_price) AS value
+            ')
+            ->first();
+    }
+
     public function getByIdAndPlace($id, $idPlace){
         return $this->model->select('*')
             ->join('categories_services as cs', 'cs.case_id', '=', 'services_places.sepl_case_id')

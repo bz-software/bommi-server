@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\EmployeeService
@@ -16,8 +17,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $emse_deleted_at
  */
 class EmployeeService extends Model {
+    use SoftDeletes;
+
     const CREATED_AT = null;
     const UPDATED_AT = null;
+    const DELETED_AT = 'emse_deleted_at';
 
     protected $primaryKey = "emse_id";
     
