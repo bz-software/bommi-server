@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\DTOs\AppointmentDTO;
 use App\DTOs\AppointmentServiceDTO;
+use App\DTOs\SearchFiltersCalendarAppointmentDTO;
 use App\Exceptions\ServiceException;
 use App\Models\EmployeePlace;
 use App\Repositories\ServicePlaceRepository;
@@ -13,6 +14,7 @@ use App\Repositories\AppointmentServiceRepository;
 use App\Repositories\ClientRepository;
 use App\Repositories\EmployeePlaceRepository;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\ControllerHelper as cHelper;
 
 
 class AppointmentService {
@@ -291,6 +293,18 @@ class AppointmentService {
     {
         [$horas, $minutos] = explode(':', $tempo);
         return ((int) $horas * 60) + (int) $minutos;
+    }
+
+    public function getByFilters(SearchFiltersCalendarAppointmentDTO $dto){
+        cHelper::employeeNeedsSelectPlace();
+
+        $idEmployee = auth('employee')->user()->emp_id;
+        $idPlace = auth('employee')->user()->emp_place_id_logged;
+        
+        $employeePlace = $this->epRepository->get($idEmployee, $idPlace);
+
+
+        return $this->apRepository->getByFilters(null, $employeePlace->ep_id, $dto->start, $dto->end);
     }
 }
 

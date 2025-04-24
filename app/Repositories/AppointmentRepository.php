@@ -46,5 +46,17 @@ class AppointmentRepository
         ->whereDate('apmt_date', $date)
         ->get();
     }
+
+    public function getByFilters($idPlace, $idEmployeePlace, $start, $end){
+        return $this->model::with([
+            'client',
+            'services.servicePlace.categoryService',
+        ])
+        ->whereHas('employeePlace', function ($query) use ($idEmployeePlace) {
+            $query->where('ep_id', $idEmployeePlace);
+        })
+        ->whereBetween('apmt_date', [$start, $end])
+        ->get();
+    }
 }
 
