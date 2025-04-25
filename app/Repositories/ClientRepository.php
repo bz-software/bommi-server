@@ -12,7 +12,7 @@ class ClientRepository
     public function storeFromAppointment(AppointmentDTO $dto)
     {
         $model = new $this->model();
-        $model->cli_name = $dto->cli_name;
+        $model->cli_name = ucwords($dto->cli_name);
         $model->cli_phone_number = $dto->cli_phone_number;
 
         if(!$model->save()){
