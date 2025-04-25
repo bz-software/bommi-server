@@ -2,6 +2,7 @@
 namespace App\Repositories;
 
 use App\DTOs\AppointmentDTO;
+use App\Enums\AppointmentStatus;
 use App\Exceptions\RepositoryException;
 use App\Models\Appointment as Model;
 use App\Models\EmployeePlace;
@@ -57,6 +58,21 @@ class AppointmentRepository
         })
         ->whereBetween('apmt_date', [$start, $end])
         ->get();
+    }
+
+    public function byId($id){
+        return $this->model->find($id);
+    }
+
+    public function finish($id){
+        $model = $this->byId($id);
+        $model->apmt_status = AppointmentStatus::Completed->value;
+
+        if(!$model->save()){
+            throw new RepositoryException("Falha interna ao finalizar agendamento", 500);
+        }
+        
+        return $model;
     }
 }
 

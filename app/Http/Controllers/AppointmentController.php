@@ -24,4 +24,8 @@ class AppointmentController extends Controller
     public function getByFilters(SearchFiltersCalendarAppointmentRequest $request){
         return AppointmentWithFullServiceResource::collection($this->service->getByFilters(SearchFiltersCalendarAppointmentDTO::fromRequest($request)));
     }
+
+    public function finish($id){
+        return $this->service->finish($id);
+    }
 }

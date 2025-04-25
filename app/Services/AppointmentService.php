@@ -306,5 +306,25 @@ class AppointmentService {
 
         return $this->apRepository->getByFilters(null, $employeePlace->ep_id, $dto->start, $dto->end);
     }
+
+    public function finish($id){
+        cHelper::employeeNeedsSelectPlace();
+
+        $model = $this->apRepository->byId($id);
+        $employee = auth('employee')->user();
+
+        $employeePlace = $this->epRepository->get($employee->emp_id, $employee->emp_place_id_logged);
+
+        if(!empty($employee) && !empty($employeePlace)){
+
+            if($employeePlace->ep_id == $model->apmt_ep_id){
+                $this->apRepository->finish($id);
+
+                return response()->noContent(200);
+            }
+        }
+        
+        throw new ServiceException([], "Agendamento não encontrado", 404);
+    }
 }
 
