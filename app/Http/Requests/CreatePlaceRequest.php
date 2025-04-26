@@ -19,11 +19,13 @@ class CreatePlaceRequest extends AbstractFormRequest
             "phoneNumber" => "required|max:11|phonenumber",
             "idCategory" => "required|exists:categories_places,capl_id",
             "cnpj" => [
-                'nullable',
-                'cnpj',
-                Rule::unique('places', 'pla_cnpj')->where(fn ($query) =>
-                    $query->where('pla_deleted', '!=', 1)
-                ),
+                Rule::requiredIf(fn () => (bool) $this->input('hasCnpj', null)),
+                Rule::when($this->filled('cnpj'), [
+                    Rule::unique('places', 'pla_cnpj')->where(fn ($query) =>
+                        $query->where('pla_deleted', '!=', 1)
+                    ),
+                    'cnpj',
+                ]),
             ],
             "hasCnpj" => "required|boolean",
             "address.cep" => "required|size:8",
