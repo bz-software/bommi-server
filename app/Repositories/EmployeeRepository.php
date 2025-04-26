@@ -123,7 +123,7 @@ class EmployeeRepository
         ->get();
 
         return $employees->each(function ($employee) use ($idPlace) {
-            $employee->employeePlace = $employee->employeePlace($idPlace);
+            $employee->employeePlace = $employee->employeePlaceByPlace($idPlace);
         });
     }
 }

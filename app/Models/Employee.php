@@ -159,7 +159,7 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
      * @param  int  $placeId
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function employeePlace($placeId)
+    public function employeePlaceByPlace($placeId)
     {
         // Retorna um único EmployeePlace com base no ep_place_id e garantindo que não seja deletado
         return $this->hasMany(EmployeePlace::class, 'ep_employee_id', 'emp_id')
