@@ -87,7 +87,7 @@ class EmployeeRepository
             throw new RepositoryException("Falha interna ao setar estabelecimento logado.", 500);
         }
         
-        return $model->save();
+        return $model;
     }
 
     public function getByEmail($email){
@@ -112,7 +112,7 @@ class EmployeeRepository
     }
 
     public function getAllActiveByPlace($idPlace, $employeeExcept = null){
-        return $this->model::select('employees.*')
+        $employees = $this->model::select('employees.*')
         ->join('employees_place', 'employees_place.ep_employee_id', '=', 'employees.emp_id')
         ->where('employees_place.ep_place_id', $idPlace)
         ->where('employees.emp_deleted', 0)
@@ -121,6 +121,10 @@ class EmployeeRepository
             $query->where('employees.emp_id', '!=', $employeeExcept);
         })
         ->get();
+
+        return $employees->each(function ($employee) use ($idPlace) {
+            $employee->employeePlace = $employee->employeePlace($idPlace);
+        });
     }
 }
 

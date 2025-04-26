@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EmployeeType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,6 +28,8 @@ class EmployeePlace extends Model {
     const CREATED_AT = NULL;
     const UPDATED_AT = NULL;
     const DELETED_AT = 'ep_deleted_at';
+
+    protected $appends = ['ep_employee_type_name'];
     
     /**
      * The table associated with the model.
@@ -77,6 +80,11 @@ class EmployeePlace extends Model {
             'ep_clock_out.required' => 'O horário de saída é obrigatório.',
             'ep_clock_out.regex' => 'O horário de saída deve estar no formato HH:MM.',
         ];
+    }
+    
+    public function getEpEmployeeTypeNameAttribute()
+    {
+        return EmployeeType::name($this->attributes['ep_employee_type']);
     }
 
     public function employee(): BelongsTo

@@ -8,7 +8,7 @@ use App\Http\Requests\CreateEmployeeRequest;
 use App\Http\Requests\EmployeeRequest;
 use App\Http\Requests\EmployeeByCpfRequest;
 use App\Http\Requests\EmployeePlaceRequest;
-use App\Http\Resources\Employee\EmployeePlaceAttendanceResource;
+use App\Http\Resources\EmployeePlace\EmployeePlaceAttendanceResource;
 use App\Http\Resources\Employee\EmployeeResource;
 use App\Services\EmployeeService as Service;
 

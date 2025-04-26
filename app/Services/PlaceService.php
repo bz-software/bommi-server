@@ -9,17 +9,29 @@ use App\Repositories\CategoryPlaceRepository;
 use App\Repositories\PlaceRepository;
 use App\Models\Place as Model;
 use App\Services\AppointmentService as AppoService;
+use App\Services\AuthEmployeeService;
 
 class PlaceService {
     public function __construct(
         private PlaceRepository $repository, 
         private CategoryPlaceRepository $cpRepository,
-        private AppoService $appoService
+        private AppoService $appoService,
+        private AuthEmployeeService $authEmployeeService
     ) {}
 
     public function create(PlaceDTO $place, CreatePlaceAddressDTO $address){
-        $this->repository->create($place, $address);
-        return response()->noContent(200);
+        $place = $this->repository->create($place, $address);
+
+        /**
+         * O EmployeePlace é criado apenas após a criação do estabelecimento.
+         * Por padrão, a estrutura de dados do usuário autenticado é: Employee => EmployeePlace.
+         * Isso permite identificar o tipo de usuário.
+         * 
+         * Portanto, após a criação, o método `setUser` é chamado para criar essa estrutura para o usuário logado.
+         */
+        $this->authEmployeeService->setUser(auth('employee')->user()->emp_id, $place->pla_id);
+
+        return auth('employee')->user();
     }
 
     public function getCategories(){

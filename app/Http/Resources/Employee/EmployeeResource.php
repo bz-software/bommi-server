@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Employee;
 
+use App\Http\Resources\EmployeePlace\EmployeePlaceResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -23,7 +24,8 @@ class EmployeeResource extends JsonResource
             "birthdate" => $this->emp_birthdate ?? null,
             "cpf" => $this->emp_cpf ?? null,
             "avatar" => $this->emp_avatar ?? null,
-            "avatarUrl" => $this->emp_avatar_url ?? null
+            "avatarUrl" => $this->emp_avatar_url ?? null,
+            "employeePlace" => new EmployeePlaceResource($this->employeePlace) ?? null
         ];
     }
 }

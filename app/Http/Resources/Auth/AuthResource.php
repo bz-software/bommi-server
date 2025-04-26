@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Auth;
 
-use App\Http\Resources\Employee\EmployeeResource;
+use App\Http\Resources\Employee\EmployeeWithEmployeePlaceResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,7 +17,7 @@ class AuthResource extends JsonResource
     {
         return [
             'token' => $this->token ?? null,
-            'user' => new EmployeeResource($this->user) ?? null
+            'user' => new EmployeeWithEmployeePlaceResource($this->user) ?? null
         ];
     }
 }

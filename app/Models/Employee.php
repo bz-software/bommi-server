@@ -39,6 +39,7 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
         "emp_birthdate",
         "emp_cpf",
         "emp_avatar",
+        "emp_place_id_logged"
     ];
 
     protected $hidden = [
@@ -150,6 +151,21 @@ class Employee extends Model implements AuthenticatableContract, JWTSubject
         }
         
         return $employee;
+    }
+
+    /**
+     * Relação de EmployeePlace para retornar apenas um EmployeePlace baseado no ep_place_id.
+     *
+     * @param  int  $placeId
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function employeePlace($placeId)
+    {
+        // Retorna um único EmployeePlace com base no ep_place_id e garantindo que não seja deletado
+        return $this->hasMany(EmployeePlace::class, 'ep_employee_id', 'emp_id')
+                    ->where('ep_place_id', $placeId)
+                    ->whereNull('ep_deleted_at') // Filtro para garantir que não seja deletado
+                    ->first(); // Garante que apenas um EmployeePlace seja retornado
     }
 
     /**

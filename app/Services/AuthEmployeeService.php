@@ -4,10 +4,14 @@ namespace App\Services;
 use App\DTOs\AuthEmployeeDTO;
 use App\DTOs\CreateEmployeeAuthDTO;
 use App\Exceptions\ServiceException;
+use App\Repositories\EmployeePlaceRepository;
 use App\Repositories\EmployeeRepository;
 
 class AuthEmployeeService {
-    public function __construct(private EmployeeRepository $repository) {}
+    public function __construct(
+        private EmployeeRepository $repository,
+        private EmployeePlaceRepository $epRepository
+    ) {}
 
     public function login(AuthEmployeeDTO $dto){
         $employeeFoundedByEmail = $this->repository->getByEmail($dto->emp_email);
@@ -27,11 +31,13 @@ class AuthEmployeeService {
             throw new ServiceException(['emp_password' => 'Senha inválida'], 400);
         }else{
             $id = auth('employee')->user()->emp_id;
-            $employee =  $this->repository->getById($id);
+            $idEmployeePlace = auth('employee')->user()->emp_place_id_logged;
+
+            $this->setUser($id, $idEmployeePlace);
 
             return (object) [
                 'token' => $login,
-                'user' => $employee
+                'user' => auth('employee')->user()
             ];
         }
     }
@@ -39,6 +45,7 @@ class AuthEmployeeService {
     public function createAuth(CreateEmployeeAuthDTO $dto){
 
         $employee = $this->repository->storeAuth($dto);
+        $employee->employeePlace = $this->epRepository->get($employee->emp_id, $employee->emp_place_id_logged);
 
         $login = auth('employee')->attempt(
             [
@@ -55,6 +62,13 @@ class AuthEmployeeService {
                 'user' => $employee
             ];
         }
+    }
+
+    public function setUser($idEmployee, $idEmployeePlace){
+        $employee =  $this->repository->getById($idEmployee);
+        $employee->employeePlace = $this->epRepository->get($idEmployee, $idEmployeePlace);
+
+        auth('employee')->setUser($employee);
     }
 
     public function logout(){
